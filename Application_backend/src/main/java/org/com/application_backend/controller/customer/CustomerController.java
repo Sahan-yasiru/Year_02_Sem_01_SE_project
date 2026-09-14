@@ -1,8 +1,8 @@
-package org.com.application_backend.controller;
+package org.com.application_backend.controller.customer;
 
 import lombok.RequiredArgsConstructor;
 import org.com.application_backend.dto.Customer.CustomerDTO;
-import org.com.application_backend.service.custom.CustomerService;
+import org.com.application_backend.service.custom.customer.CustomerService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
