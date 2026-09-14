@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.com.application_backend.entity.Supplier.Supplier;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -14,8 +16,15 @@ public class SparePart {
     @Id
     private String partID;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Supplier supplier;
+
+    @ManyToMany
+    @JoinTable(
+            name = "spare_part_supplier",
+            joinColumns = @JoinColumn(name = "part_id"),
+            inverseJoinColumns = @JoinColumn(name = "supplier_id")
+    )
+    private List<Supplier> suppliers;
+;
 
     @OneToOne
     @JoinColumn(name = "brandID")
