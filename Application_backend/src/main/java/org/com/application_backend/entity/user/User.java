@@ -10,7 +10,8 @@ import lombok.*;
 @Entity
 public class User {
     @Id
-    private int userID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userID;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -23,7 +24,6 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
     private String phone;
 
 }

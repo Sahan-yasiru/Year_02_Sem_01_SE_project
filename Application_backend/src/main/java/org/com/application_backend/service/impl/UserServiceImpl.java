@@ -22,24 +22,52 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO save(UserDTO dto) throws Exception {
-        if(ifExit(dto.getUsername())){
-            throw new CustomException("username name already registered");
+        if (dto == null || dto.getUsername() == null || dto.getUsername().isBlank()) {
+            throw new CustomException("Username is required");
         }
-        if(userRepository.existsByEmail(dto.getEmail())){
-            throw new CustomException("email has already been registered");
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new CustomException("Email is required");
         }
-        return modelMapper.map(userRepository.save(modelMapper.map(dto, User.class)), UserDTO.class);
+        String cleanUsername = dto.getUsername().trim();
+        String cleanEmail = dto.getEmail().trim();
+
+        if (userRepository.existsByUsernameIgnoreCase(cleanUsername)) {
+            throw new CustomException("Username '" + cleanUsername + "' is already registered");
+        }
+        if (userRepository.existsByEmail(cleanEmail)) {
+            throw new CustomException("Email '" + cleanEmail + "' is already registered");
+        }
+
+        User user = modelMapper.map(dto, User.class);
+        user.setUsername(cleanUsername);
+        user.setEmail(cleanEmail);
+        user.setUserID(null);
+        
+        return modelMapper.map(userRepository.save(user), UserDTO.class);
     }
 
     @Override
     public UserDTO update(UserDTO dto) throws Exception {
-        if(ifExit(dto.getUsername())){
-            throw new CustomException("username name already registered");
+        if (dto == null || dto.getUserID() == null) {
+            throw new CustomException("User ID is required for update");
         }
-        if(userRepository.existsByEmail(dto.getEmail())){
-            throw new CustomException("email has already been registered");
+        User existingUser = userRepository.findById(dto.getUserID())
+                .orElseThrow(() -> new CustomException("User not found"));
+
+        String cleanUsername = dto.getUsername() != null ? dto.getUsername().trim() : existingUser.getUsername();
+        String cleanEmail = dto.getEmail() != null ? dto.getEmail().trim() : existingUser.getEmail();
+
+        if (!existingUser.getUsername().equalsIgnoreCase(cleanUsername) && userRepository.existsByUsernameIgnoreCase(cleanUsername)) {
+            throw new CustomException("Username '" + cleanUsername + "' is already registered to another user");
         }
-        return modelMapper.map(userRepository.save(modelMapper.map(dto, User.class)), UserDTO.class);
+        if (!existingUser.getEmail().equalsIgnoreCase(cleanEmail) && userRepository.existsByEmailIgnoreCase(cleanEmail)) {
+            throw new CustomException("Email '" + cleanEmail + "' is already registered to another user");
+        }
+
+        User userToSave = modelMapper.map(dto, User.class);
+        userToSave.setUsername(cleanUsername);
+        userToSave.setEmail(cleanEmail);
+        return modelMapper.map(userRepository.save(userToSave), UserDTO.class);
     }
 
     @Override

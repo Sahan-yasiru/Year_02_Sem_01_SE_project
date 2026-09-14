@@ -1,33 +1,701 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+<!DOCTYPE html>
+<html lang="en" class="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoho AutoParts Admin Dashboard</title>
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
+  <!-- Tailwind CSS & Inter Font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
-
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#fafafa">
+  <!-- Custom Styles & Animations -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
 </head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
 
-<body>
+  <!-- App Wrapper -->
+  <div class="flex h-screen overflow-hidden">
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 flex flex-col transform -translate-x-full lg:translate-x-0 transition-all duration-300">
+      
+      <!-- Sidebar Header -->
+      <div class="h-16 px-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60">
+        <a href="#dashboard" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <span class="logo-text font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">AutoParts Pro</span>
+        </a>
+        <button id="btn-toggle-sidebar" class="hidden lg:flex text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+        </button>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <a href="#dashboard" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="dashboard" data-tooltip="Dashboard">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span class="sidebar-text">Dashboard</span>
+        </a>
+
+        <a href="#customers" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="customers" data-tooltip="Customers">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          <span class="sidebar-text">Customers</span>
+        </a>
+
+        <a href="#orders" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="orders" data-tooltip="Orders">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <span class="sidebar-text">Orders</span>
+        </a>
+
+        <a href="#spare-parts" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="spare-parts" data-tooltip="Spare Parts">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <span class="sidebar-text">Spare Parts</span>
+        </a>
+
+        <a href="#inventory" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="inventory" data-tooltip="Inventory">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+          <span class="sidebar-text">Inventory</span>
+        </a>
+
+        <a href="#suppliers" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="suppliers" data-tooltip="Suppliers">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          <span class="sidebar-text">Suppliers</span>
+        </a>
+
+        <a href="#brands" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="brands" data-tooltip="Brands">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+          <span class="sidebar-text">Brands</span>
+        </a>
+
+        <a href="#categories" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="categories" data-tooltip="Categories">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          <span class="sidebar-text">Categories</span>
+        </a>
+
+        <a href="#users" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="users" data-tooltip="Users / Admins">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <span class="sidebar-text">Users / Admins</span>
+        </a>
+
+        <a href="#reports" class="nav-item flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white transition-all" data-view="reports" data-tooltip="Reports">
+          <svg class="w-5 h-5 mr-3 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span class="sidebar-text">Reports</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-md">
+            AD
+          </div>
+          <div class="sidebar-text overflow-hidden">
+            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">System Administrator</p>
+            <p class="text-[11px] text-slate-400 truncate">admin@zoho.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+      <!-- Header Bar -->
+      <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/60 px-4 sm:px-6 flex items-center justify-between z-30">
+        <div class="flex items-center gap-3">
+          <button id="btn-mobile-menu" class="lg:hidden text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+          
+          <div class="relative hidden sm:block w-64 md:w-80">
+            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" placeholder="Global search..." class="w-full pl-10 pr-4 py-1.5 text-sm bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition-all" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Dark Mode Toggle Button -->
+          <button id="btn-theme-toggle" class="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Toggle Light/Dark Theme">
+            <svg id="theme-toggle-dark-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          </button>
+
+          <!-- Notifications Icon -->
+          <button class="relative p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Notifications">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic View Container -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+
+        <!-- ==================== VIEW: DASHBOARD ==================== -->
+        <section id="view-dashboard" class="view-panel space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">System Overview</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Live metrics and performance statistics of your spare parts inventory.</p>
+            </div>
+            <button onclick="DashboardController.loadData()" class="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Refresh Stats
+            </button>
+          </div>
+
+          <!-- Stats Grid Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card: Customers -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow transition-all hover:-translate-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Customers</span>
+                <div class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span id="stat-customers" class="text-3xl font-extrabold text-slate-900 dark:text-white">0</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                  <span class="text-emerald-500 font-semibold">↑ Active</span> customer accounts
+                </p>
+              </div>
+            </div>
+
+            <!-- Card: Orders -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow transition-all hover:-translate-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Orders</span>
+                <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span id="stat-orders" class="text-3xl font-extrabold text-slate-900 dark:text-white">0</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Processed orders</p>
+              </div>
+            </div>
+
+            <!-- Card: Spare Parts -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow transition-all hover:-translate-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Spare Parts</span>
+                <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span id="stat-parts" class="text-3xl font-extrabold text-slate-900 dark:text-white">0</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Catalog items</p>
+              </div>
+            </div>
+
+            <!-- Card: Low Stock Items -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow transition-all hover:-translate-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Low Stock Alert</span>
+                <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span id="stat-lowstock" class="text-3xl font-extrabold text-amber-600 dark:text-amber-400">0</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Items below reorder limit</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Preview Tables Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Recent Orders Box -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Recent Orders</h3>
+                <a href="#orders" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">View All →</a>
+              </div>
+              <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-100 dark:border-slate-700 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      <th class="px-6 py-2">Order ID</th>
+                      <th class="px-6 py-2">Customer</th>
+                      <th class="px-6 py-2">Amount</th>
+                      <th class="px-6 py-2">Status</th>
+                      <th class="px-6 py-2">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-orders-body">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Low Stock Items Box -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Low Stock Items</h3>
+                <a href="#inventory" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">Manage Stock →</a>
+              </div>
+              <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-100 dark:border-slate-700 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      <th class="px-6 py-2">Inv ID</th>
+                      <th class="px-6 py-2">Item Name</th>
+                      <th class="px-6 py-2">On Hand</th>
+                      <th class="px-6 py-2">Threshold</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-low-stock-body">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: CUSTOMERS ==================== -->
+        <section id="view-customers" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Customer Management</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage customer records, email addresses, and phone numbers.</p>
+            </div>
+            <button id="btn-add-customer" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Customer</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="customer-search-input" placeholder="Search customers..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">ID</th>
+                    <th class="px-6 py-3.5">Name</th>
+                    <th class="px-6 py-3.5">Email</th>
+                    <th class="px-6 py-3.5">Phone</th>
+                    <th class="px-6 py-3.5">Address</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customer-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="customer-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: ORDERS ==================== -->
+        <section id="view-orders" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Order Management</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Track orders, status transitions, and delivery amounts.</p>
+            </div>
+            <button id="btn-add-order" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Place New Order</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="order-search-input" placeholder="Search order ID or customer..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <select id="order-status-filter" class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100 font-medium">
+                  <option value="ALL">All Statuses</option>
+                  <option value="CONFIRMED">Confirmed</option>
+                  <option value="PROCESSING">Processing</option>
+                  <option value="DELIVERED">Delivered</option>
+                  <option value="CANCELLED">Cancelled</option>
+                  <option value="RETURNED">Returned</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Order ID</th>
+                    <th class="px-6 py-3.5">Customer</th>
+                    <th class="px-6 py-3.5">Quantity</th>
+                    <th class="px-6 py-3.5">Total Amount</th>
+                    <th class="px-6 py-3.5">Date</th>
+                    <th class="px-6 py-3.5">Status</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="order-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="order-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: SPARE PARTS ==================== -->
+        <section id="view-spare-parts" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Spare Parts Catalog</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage part numbers, cost prices, selling prices, and category links.</p>
+            </div>
+            <button id="btn-add-sparepart" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Spare Part</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="sparepart-search-input" placeholder="Search parts by name or part #..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Part ID</th>
+                    <th class="px-6 py-3.5">Part Number</th>
+                    <th class="px-6 py-3.5">Part Name</th>
+                    <th class="px-6 py-3.5">Cost Price</th>
+                    <th class="px-6 py-3.5">Sell Price</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sparepart-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="sparepart-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: INVENTORY ==================== -->
+        <section id="view-inventory" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Inventory Management</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Monitor stock quantities, reorder thresholds, and visual stock status.</p>
+            </div>
+            <button id="btn-add-inventory" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Inventory Record</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="inventory-search-input" placeholder="Search inventory..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Inventory ID</th>
+                    <th class="px-6 py-3.5">Spare Part</th>
+                    <th class="px-6 py-3.5">Quantity On Hand</th>
+                    <th class="px-6 py-3.5">Reorder Threshold</th>
+                    <th class="px-6 py-3.5">Stock Status</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="inventory-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: SUPPLIERS ==================== -->
+        <section id="view-suppliers" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Suppliers Directory</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage vendor contact details, emails, and phone numbers.</p>
+            </div>
+            <button id="btn-add-supplier" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Supplier</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="supplier-search-input" placeholder="Search suppliers..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Supplier ID</th>
+                    <th class="px-6 py-3.5">Supplier Name</th>
+                    <th class="px-6 py-3.5">Email</th>
+                    <th class="px-6 py-3.5">Phone</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="supplier-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="supplier-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: BRANDS ==================== -->
+        <section id="view-brands" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Brands</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage part brands and their country of origin.</p>
+            </div>
+            <button id="btn-add-brand" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs shadow-lg shadow-violet-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Brand</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="brand-search-input" placeholder="Search brands..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Brand ID</th>
+                    <th class="px-6 py-3.5">Brand Name</th>
+                    <th class="px-6 py-3.5">Country of Origin</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="brand-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="brand-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: CATEGORIES ==================== -->
+        <section id="view-categories" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Categories</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage spare part categories and their descriptions.</p>
+            </div>
+            <button id="btn-add-category" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-lg shadow-teal-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add Category</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="category-search-input" placeholder="Search categories..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">Category ID</th>
+                    <th class="px-6 py-3.5">Category Name</th>
+                    <th class="px-6 py-3.5">Description</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="category-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="category-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: USERS / ADMINS ==================== -->
+        <section id="view-users" class="view-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Users & Admin Accounts</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage system administrators, store managers, and staff roles.</p>
+            </div>
+            <button id="btn-add-user" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add User</span>
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 card-shadow overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="relative w-full sm:w-80">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="user-search-input" placeholder="Search user accounts..." class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100" />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th class="px-6 py-3.5">User ID</th>
+                    <th class="px-6 py-3.5">Username</th>
+                    <th class="px-6 py-3.5">Email</th>
+                    <th class="px-6 py-3.5">Phone</th>
+                    <th class="px-6 py-3.5">Role</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="user-table-body">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="user-pagination" class="p-4 border-t border-slate-100 dark:border-slate-700/60"></div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW: REPORTS ==================== -->
+        <section id="view-reports" class="view-panel hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Reports & Analytics</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Financial performance and operational summaries.</p>
+            </div>
+            <button onclick="ReportsController.loadData()" class="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+              Refresh Analytics
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Delivered Sales Revenue</span>
+              <div id="report-total-revenue" class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-3">$0.00</div>
+              <span class="text-xs text-slate-400 mt-1 block">From completed/delivered orders</span>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Inventory Valuation</span>
+              <div id="report-inventory-val" class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 mt-3">$0.00</div>
+              <span class="text-xs text-slate-400 mt-1 block">Stock quantity × unit price</span>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Orders Lifetime</span>
+              <div id="report-total-orders" class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-3">0</div>
+              <span class="text-xs text-slate-400 mt-1 block">Recorded in system</span>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 card-shadow">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Fulfillment Success Rate</span>
+              <div id="report-delivery-rate" class="text-3xl font-extrabold text-purple-600 dark:text-purple-400 mt-3">0%</div>
+              <span class="text-xs text-slate-400 mt-1 block">Orders delivered vs total</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- Application Modules (MVC Pattern) -->
+  <script src="js/api.js"></script>
+  <script src="js/id-generator.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/customers.js"></script>
+  <script src="js/orders.js"></script>
+  <script src="js/spare-parts.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/suppliers.js"></script>
+  <script src="js/brands.js"></script>
+  <script src="js/categories.js"></script>
+  <script src="js/users.js"></script>
+  <script src="js/reports.js"></script>
   <script src="js/app.js"></script>
 
 </body>
-
 </html>

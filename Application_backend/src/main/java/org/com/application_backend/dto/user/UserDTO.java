@@ -9,7 +9,7 @@ import org.com.application_backend.entity.user.UserRole;
 @NoArgsConstructor
 @Data
 public class UserDTO {
-    private int userID;
+    private Integer userID;
     private UserRole userRole;
     private String username;
     private String password;
