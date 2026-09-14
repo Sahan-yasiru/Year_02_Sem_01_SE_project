@@ -9,9 +9,7 @@ public interface SuperService<T> {
 
     List<T> getAll()throws Exception;
 
-    String getLastID()throws Exception;
-
-    void  delete(String id)throws Exception;
+    void delete(String id)throws Exception;
 
     T find(String id)throws Exception;
 
