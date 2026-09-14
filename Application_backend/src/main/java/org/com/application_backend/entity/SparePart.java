@@ -23,7 +23,7 @@ public class SparePart {
 
     @OneToOne
     @JoinColumn(name = "categoryID")
-    private category category;
+    private Category category;
 
     @OneToOne
     @JoinColumn(name = "inventoryID")
