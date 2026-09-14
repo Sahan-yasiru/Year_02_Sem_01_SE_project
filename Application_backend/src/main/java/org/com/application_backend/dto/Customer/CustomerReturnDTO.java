@@ -1,17 +1,15 @@
 package org.com.application_backend.dto.Customer;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.com.application_backend.entity.order.Order;
 
 import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class CustomerReturnDTO {
     private String returnID;
     private Date date;

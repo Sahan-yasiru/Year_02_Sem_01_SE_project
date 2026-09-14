@@ -1,17 +1,15 @@
 package org.com.application_backend.dto.Supplier;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.com.application_backend.entity.SparePart;
 
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class SupplierDTO {
     private String SupplierID;
     private String name;

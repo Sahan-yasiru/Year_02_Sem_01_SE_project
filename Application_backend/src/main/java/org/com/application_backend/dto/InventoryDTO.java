@@ -1,15 +1,13 @@
 package org.com.application_backend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.com.application_backend.entity.SparePart;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class InventoryDTO {
     private String inventory_id;
     private SparePart part;
