@@ -24,28 +24,31 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDTO save(CustomerDTO dto) throws Exception {
         if (ifExit(dto.getCustomerID())) {
-            throw new CustomException("customer already registered");
+            throw new CustomException("Customer ID is already registered");
         }
-        customerVerification(dto);
+        if (dto.getUser() != null && dto.getUser().getUsername() != null && userService.ifExit(dto.getUser().getUsername())) {
+            throw new CustomException("Customer user name is already registered");
+        }
+        if (customerRepository.existsByEmail(dto.getEmail())) {
+            throw new CustomException("Customer email is already registered");
+        }
+        if (customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            throw new CustomException("Customer phone is already registered");
+        }
         return modelMapper.map(customerRepository.save(modelMapper.map(dto, Customer.class)), CustomerDTO.class);
     }
 
-    public void customerVerification(CustomerDTO dto) throws Exception {
-        if (userService.ifExit(dto.getUser().getUsername())) {
-            throw new CustomException("customer user name is already registered");
-        }
-        if (customerRepository.existsByEmail(dto.getEmail())) {
-            throw new CustomException("customer email is already registered");
-        }
-        if (customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
-            throw new CustomException("customer email is already registered");
-        }
-    }
-
-
     @Override
     public CustomerDTO update(CustomerDTO dto) throws Exception {
-        customerVerification(dto);
+        Customer existingCustomer = customerRepository.findById(dto.getCustomerID())
+                .orElseThrow(() -> new CustomException("Customer not found"));
+
+        if (!existingCustomer.getEmail().equalsIgnoreCase(dto.getEmail()) && customerRepository.existsByEmail(dto.getEmail())) {
+            throw new CustomException("Customer email is already registered to another customer");
+        }
+        if (!existingCustomer.getPhoneNumber().equals(dto.getPhoneNumber()) && customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            throw new CustomException("Customer phone is already registered to another customer");
+        }
         return modelMapper.map(customerRepository.save(modelMapper.map(dto, Customer.class)), CustomerDTO.class);
     }
 

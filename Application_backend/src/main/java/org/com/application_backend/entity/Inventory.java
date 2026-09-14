@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 import lombok.*;
 
 @AllArgsConstructor
@@ -21,4 +22,8 @@ public class Inventory {
 
     //This tells the system when it is time to order more stock.
     private int reorder_threshold;
+
+    /* Detects stale stock updates in paths that do not take the pessimistic lock. */
+    @Version
+    private Long version;
 }

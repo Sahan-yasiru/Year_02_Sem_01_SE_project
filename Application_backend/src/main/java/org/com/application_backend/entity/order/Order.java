@@ -21,21 +21,28 @@ public class Order {
     @Id
     private String orderId;
 
-    @OneToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "customerID")
     private Customer customer;
 
-    @OneToMany
+    // A catalogue part can appear in many different orders.  The join table is
+    // intentionally not cascaded: orders never create or delete catalogue data.
+    @ManyToMany
+    @JoinTable(name = "customer_order_spare_part",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "part_id"))
     private List<SparePart> spareParts;
 
     private int quantity;
 
     private double totalPrice;
 
-    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     private Date date;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus orderStatus;
 
     private String address;

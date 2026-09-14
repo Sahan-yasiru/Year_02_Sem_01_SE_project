@@ -24,7 +24,7 @@ public class Customer {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
