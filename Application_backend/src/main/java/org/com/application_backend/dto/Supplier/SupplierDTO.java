@@ -15,5 +15,4 @@ public class SupplierDTO {
     private String name;
     private int phone;
     private String email;
-    private List<SparePart> spareParts;
 }

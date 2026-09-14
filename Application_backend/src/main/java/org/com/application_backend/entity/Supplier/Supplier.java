@@ -22,7 +22,4 @@ public class Supplier {
     @Column(unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "supplier")
-    private List<SparePart>  spareParts;
-
 }
