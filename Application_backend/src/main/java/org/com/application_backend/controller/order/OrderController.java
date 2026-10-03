@@ -35,6 +35,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<APIResponse<OrderDTO>> create(@RequestBody OrderDTO order) throws Exception {
+        System.out.println(order);
         return ResponseEntity.ok(new APIResponse<>(200, "Order created successfully", orderService.save(order)));
     }
 

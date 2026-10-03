@@ -3,6 +3,7 @@ package org.com.application_backend.dto.order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.com.application_backend.dto.Customer.CustomerDTO;
 import org.com.application_backend.dto.SparePartDTO;
 import org.com.application_backend.entity.Customer.Customer;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 public class OrderDTO {
     private String orderId;
     private CustomerDTO customer;

@@ -3,6 +3,7 @@ package org.com.application_backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.entity.Brand;
 import org.com.application_backend.entity.Inventory;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 public class SparePartDTO {
     private String partID;
     private String partName;

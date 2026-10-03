@@ -21,13 +21,13 @@ public class Order {
     @Id
     private String orderId;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "customerID")
     private Customer customer;
 
     // A catalogue part can appear in many different orders.  The join table is
     // intentionally not cascaded: orders never create or delete catalogue data.
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "customer_order_spare_part",
     joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "part_id"))

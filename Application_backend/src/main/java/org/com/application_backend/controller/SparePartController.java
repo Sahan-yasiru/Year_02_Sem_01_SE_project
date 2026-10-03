@@ -35,7 +35,12 @@ public class SparePartController {
 
     @PostMapping
     public ResponseEntity<APIResponse<SparePartDTO>> saveSparePart(@RequestBody SparePartDTO dto) throws Exception {
-        return ResponseEntity.ok(new APIResponse<>(200, "Spare part created successfully", sparePartService.save(dto)));
+        return ResponseEntity.ok(new APIResponse<>(200, "Spare part created successfully", sparePartService.save(dto,true)));
+    }
+
+    @PostMapping("/without-inventory")
+    public ResponseEntity<APIResponse<SparePartDTO>> saveSparePartWithOutInvent(@RequestBody SparePartDTO dto) throws Exception {
+        return ResponseEntity.ok(new APIResponse<>(200, "Spare part created successfully", sparePartService.save(dto,false)));
     }
 
     @PutMapping

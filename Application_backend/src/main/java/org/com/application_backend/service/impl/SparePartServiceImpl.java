@@ -27,15 +27,22 @@ public class SparePartServiceImpl implements SparePartService {
     private final ModelMapper modelMapper;
 
     @Override
-    @Transactional
     public SparePartDTO save(SparePartDTO dto) throws Exception {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public SparePartDTO save(SparePartDTO dto,boolean state) throws Exception {
         if (ifExit(dto.getPartID())) {
             throw new CustomException("spare part already registered");
         }
-        if(inventoryRepository.getInventoryByPart(modelMapper.map(dto,SparePart.class))==null){
-            inventoryRepository.save(new Inventory(inventoryService.getLastID(),
-                    modelMapper.map(dto,SparePart.class),
-                    0, 0,null));
+        if(state) {
+            if (inventoryRepository.getInventoryByPart(modelMapper.map(dto, SparePart.class)) == null) {
+                inventoryRepository.save(new Inventory(inventoryService.getLastID(),
+                        modelMapper.map(dto, SparePart.class),
+                        0, 0, null));
+            }
         }
         return modelMapper.map(sparePartRepository.save(modelMapper.map(dto, SparePart.class)), SparePartDTO.class);
     }

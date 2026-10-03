@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -45,22 +46,43 @@ public class OrderServiceImpl implements OrderService {
         return internalSave(dto);
 
     }
+    @Transactional
     public OrderDTO internalSave(OrderDTO dto) throws Exception {
 
-        Customer customer = requireCustomer(modelMapper.map(dto.getCustomer(), Customer.class));
-        List<SparePart> parts = resolveParts(Collections.singletonList(modelMapper.map(dto.getSpareParts(), SparePart.class)));
+        Customer customer = requireCustomer(
+                modelMapper.map(dto.getCustomer(), Customer.class)
+        );
+
+        List<SparePart> parts = resolveParts(
+                dto.getSpareParts().stream()
+                        .map(spDto -> modelMapper.map(spDto, SparePart.class))
+                        .collect(Collectors.toList())
+        );
+
         reserveStock(parts);
 
-        dto.setCustomer(modelMapper.map(customer, CustomerDTO.class));
-        dto.setSpareParts(Collections.singletonList(modelMapper.map(parts, SparePartDTO.class)));
-        dto.setQuantity(parts.size());
-        dto.setTotalPrice(parts.stream().mapToDouble(SparePart::getSellPrice).sum());
-        dto.setDate(new Date());
-        dto.setOrderStatus(dto.getOrderStatus() == null ? OrderStatus.CONFIRMED : dto.getOrderStatus());
-        if (dto.getOrderStatus() != OrderStatus.CONFIRMED) {
-            throw new CustomException("a new order must start as CONFIRMED");
-        }
-        return modelMapper.map(orderRepository.save(modelMapper.map(dto,Order.class)), OrderDTO.class);
+        Order order = new Order();
+
+        order.setOrderId(dto.getOrderId());
+        order.setCustomer(customer);
+        order.setSpareParts(parts);
+        order.setQuantity(parts.size());
+        order.setTotalPrice(
+                parts.stream()
+                        .mapToDouble(SparePart::getSellPrice)
+                        .sum()
+        );
+        order.setDate(new Date());
+        order.setOrderStatus(
+                dto.getOrderStatus() == null
+                        ? OrderStatus.CONFIRMED
+                        : dto.getOrderStatus()
+        );
+        order.setAddress(dto.getAddress());
+
+        Order savedOrder = orderRepository.save(order);
+
+        return modelMapper.map(savedOrder, OrderDTO.class);
     }
     @Override
     @Transactional
@@ -76,7 +98,11 @@ public class OrderServiceImpl implements OrderService {
             existing.setCustomer(customer);
         }
         if (dto.getSpareParts() != null && !dto.getSpareParts().isEmpty()) {
-            List<SparePart> parts = resolveParts(Collections.singletonList(modelMapper.map(dto.getSpareParts(), SparePart.class)));
+            List<SparePart> parts = resolveParts(
+                    dto.getSpareParts().stream()
+                            .map(spDto -> modelMapper.map(spDto, SparePart.class))
+                            .collect(Collectors.toList())
+            );
             existing.setSpareParts(parts);
         }
         if (dto.getQuantity() > 0) {
@@ -162,8 +188,7 @@ public class OrderServiceImpl implements OrderService {
         adjustStock(parts, 1, "");
     }
 
-
-    private void adjustStock(List<SparePart> parts, int direction, String insufficientStockMessage) throws Exception {
+    protected void adjustStock(List<SparePart> parts, int direction, String insufficientStockMessage) throws Exception {
         for (SparePart sparePart : parts) {
 
             if (inventoryRepository.getInventoryByPart(sparePart) == null) {

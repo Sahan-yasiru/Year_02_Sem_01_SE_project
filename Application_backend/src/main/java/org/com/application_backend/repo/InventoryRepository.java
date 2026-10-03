@@ -21,6 +21,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, String> {
 
     Inventory getInventoryByPart(SparePart part);
 
-    @Query("SELECT c.customerID FROM Customer c ORDER BY  c.customerID DESC")
+    @Query("SELECT I.inventory_id FROM Inventory I ORDER BY  I.inventory_id DESC")
     List<String> getLastInventory();
 }

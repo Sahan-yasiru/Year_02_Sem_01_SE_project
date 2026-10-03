@@ -3,11 +3,14 @@ package org.com.application_backend.service.impl;
 import lombok.AllArgsConstructor;
 import org.com.application_backend.dto.InventoryDTO;
 import org.com.application_backend.entity.Inventory;
+import org.com.application_backend.entity.SparePart;
 import org.com.application_backend.exception.CustomException;
 import org.com.application_backend.repo.InventoryRepository;
+import org.com.application_backend.repo.SparePartRepository;
 import org.com.application_backend.service.custom.InventoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,25 +20,49 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final SparePartRepository sparePartRepository;
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public InventoryDTO save(InventoryDTO dto) throws Exception {
-        if (ifExit(dto.getInventory_id())) {
+        if (dto.getInventory_id() != null && ifExit(dto.getInventory_id())) {
             throw new CustomException("inventory already registered");
         }
-        if(dto.getInventory_id() == null){
+        if (dto.getInventory_id() == null) {
             dto.setInventory_id(getLastID());
         }
-        return modelMapper.map(inventoryRepository.save(modelMapper.map(dto, Inventory.class)), InventoryDTO.class);
+
+        Inventory inventory = new Inventory();
+        inventory.setInventory_id(dto.getInventory_id());
+        inventory.setQuantity_on_hand(dto.getQuantity_on_hand());
+        inventory.setReorder_threshold(dto.getReorder_threshold());
+
+        if (dto.getPart() != null && dto.getPart().getPartID() != null) {
+            SparePart part = sparePartRepository.findById(dto.getPart().getPartID())
+                    .orElseThrow(() -> new CustomException("Spare part not found"));
+            inventory.setPart(part);
+        }
+
+        return modelMapper.map(inventoryRepository.save(inventory), InventoryDTO.class);
     }
 
     @Override
+    @Transactional
     public InventoryDTO update(InventoryDTO dto) throws Exception {
-        if (!ifExit(dto.getInventory_id())) {
-            throw new CustomException("inventory not found");
+        Inventory existing = inventoryRepository.findById(dto.getInventory_id())
+                .orElseThrow(() -> new CustomException("inventory not found"));
+
+        existing.setQuantity_on_hand(dto.getQuantity_on_hand());
+        existing.setReorder_threshold(dto.getReorder_threshold());
+
+        if (dto.getPart() != null && dto.getPart().getPartID() != null) {
+            SparePart part = sparePartRepository.findById(dto.getPart().getPartID())
+                    .orElseThrow(() -> new CustomException("Spare part not found"));
+            existing.setPart(part);
         }
-        return modelMapper.map(inventoryRepository.save(modelMapper.map(dto, Inventory.class)), InventoryDTO.class);
+
+        return modelMapper.map(inventoryRepository.save(existing), InventoryDTO.class);
     }
 
     @Override
@@ -66,7 +93,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public String getLastID() {
         List<String> ids = inventoryRepository.getLastInventory();
-        if (ids == null || ids.isEmpty()) {
+        if (ids.isEmpty()) {
             return "I001";
         }
         int num = Integer.parseInt(ids.getFirst().substring(1));

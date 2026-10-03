@@ -26,11 +26,11 @@ public class SparePart {
     private List<Supplier> suppliers;
 ;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "brandID")
     private Brand brand;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "categoryID")
     private Category category;
 
