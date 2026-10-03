@@ -2,9 +2,6 @@ package org.com.application_backend.entity.Supplier;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.com.application_backend.entity.SparePart;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +10,7 @@ import java.util.List;
 @Entity
 public class Supplier {
     @Id
-    private String SupplierID;
+    private String supplierID;
     private String name;
 
     @Column(unique = true)

@@ -29,7 +29,7 @@ public class Order {
     // intentionally not cascaded: orders never create or delete catalogue data.
     @ManyToMany
     @JoinTable(name = "customer_order_spare_part",
-            joinColumns = @JoinColumn(name = "order_id"),
+    joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "part_id"))
     private List<SparePart> spareParts;
 

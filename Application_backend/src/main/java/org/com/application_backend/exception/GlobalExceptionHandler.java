@@ -17,13 +17,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<APIResponse<Void>> handleBusinessException(CustomException e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest()
                 .body(new APIResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null));
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<APIResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException e) {
-
+        e.printStackTrace();
         Map<String, String> errors = new HashMap<>();
 
         e.getBindingResult().getFieldErrors().forEach(error -> {
@@ -36,12 +37,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIResponse<Void>> handleMalformedRequest(HttpMessageNotReadableException e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest()
                 .body(new APIResponse<>(HttpStatus.BAD_REQUEST.value(), "Malformed request body", null));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<APIResponse<Void>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new APIResponse<>(HttpStatus.CONFLICT.value(), "Request conflicts with existing data", null));
     }

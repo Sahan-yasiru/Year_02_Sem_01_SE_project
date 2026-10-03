@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 public class OrderItem {
     @Id
     private String id;

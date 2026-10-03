@@ -26,7 +26,13 @@ public class UserServiceImpl implements UserService {
             throw new CustomException("Username is required");
         }
         if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+
             throw new CustomException("Email is required");
+        }
+        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+
+        if (!dto.getEmail().matches(emailRegex)) {
+            throw new CustomException("Invalid email");
         }
         String cleanUsername = dto.getUsername().trim();
         String cleanEmail = dto.getEmail().trim();

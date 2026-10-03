@@ -24,6 +24,9 @@ public class InventoryServiceImpl implements InventoryService {
         if (ifExit(dto.getInventory_id())) {
             throw new CustomException("inventory already registered");
         }
+        if(dto.getInventory_id() == null){
+            dto.setInventory_id(getLastID());
+        }
         return modelMapper.map(inventoryRepository.save(modelMapper.map(dto, Inventory.class)), InventoryDTO.class);
     }
 
@@ -59,5 +62,15 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public boolean ifExit(String id) throws Exception {
         return inventoryRepository.existsById(id);
+    }
+    @Override
+    public String getLastID() {
+        List<String> ids = inventoryRepository.getLastInventory();
+        if (ids == null || ids.isEmpty()) {
+            return "I001";
+        }
+        int num = Integer.parseInt(ids.getFirst().substring(1));
+        num++;
+        return String.format("I%03d", num);
     }
 }

@@ -1,7 +1,9 @@
 package org.com.application_backend.service.impl.order;
 
 import lombok.RequiredArgsConstructor;
+import org.com.application_backend.dto.Customer.CustomerDTO;
 import org.com.application_backend.dto.InventoryDTO;
+import org.com.application_backend.dto.SparePartDTO;
 import org.com.application_backend.dto.order.OrderDTO;
 import org.com.application_backend.entity.Customer.Customer;
 import org.com.application_backend.entity.Inventory;
@@ -13,7 +15,6 @@ import org.com.application_backend.repo.Customer.CustomerRepository;
 import org.com.application_backend.repo.InventoryRepository;
 import org.com.application_backend.repo.SparePartRepository;
 import org.com.application_backend.repo.order.OrderRepository;
-import org.com.application_backend.service.custom.InventoryService;
 import org.com.application_backend.service.custom.order.OrderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ import java.util.*;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final InventoryService inventoryRepository;
+    private final InventoryRepository inventoryRepository;
     private final SparePartRepository sparePartRepository;
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapper;
@@ -46,12 +47,12 @@ public class OrderServiceImpl implements OrderService {
     }
     public OrderDTO internalSave(OrderDTO dto) throws Exception {
 
-        Customer customer = requireCustomer(dto.getCustomer());
-        List<SparePart> parts = resolveParts(dto.getSpareParts());
+        Customer customer = requireCustomer(modelMapper.map(dto.getCustomer(), Customer.class));
+        List<SparePart> parts = resolveParts(Collections.singletonList(modelMapper.map(dto.getSpareParts(), SparePart.class)));
         reserveStock(parts);
 
-        dto.setCustomer(customer);
-        dto.setSpareParts(parts);
+        dto.setCustomer(modelMapper.map(customer, CustomerDTO.class));
+        dto.setSpareParts(Collections.singletonList(modelMapper.map(parts, SparePartDTO.class)));
         dto.setQuantity(parts.size());
         dto.setTotalPrice(parts.stream().mapToDouble(SparePart::getSellPrice).sum());
         dto.setDate(new Date());
@@ -71,11 +72,11 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new CustomException("order not found"));
 
         if (dto.getCustomer() != null && !isBlank(dto.getCustomer().getCustomerID())) {
-            Customer customer = requireCustomer(dto.getCustomer());
+            Customer customer = requireCustomer(modelMapper.map(dto.getCustomer(), Customer.class));
             existing.setCustomer(customer);
         }
         if (dto.getSpareParts() != null && !dto.getSpareParts().isEmpty()) {
-            List<SparePart> parts = resolveParts(dto.getSpareParts());
+            List<SparePart> parts = resolveParts(Collections.singletonList(modelMapper.map(dto.getSpareParts(), SparePart.class)));
             existing.setSpareParts(parts);
         }
         if (dto.getQuantity() > 0) {
@@ -164,16 +165,16 @@ public class OrderServiceImpl implements OrderService {
 
     private void adjustStock(List<SparePart> parts, int direction, String insufficientStockMessage) throws Exception {
         for (SparePart sparePart : parts) {
-            if (sparePart.getInventory() == null ||
-                    isBlank(sparePart.getInventory().getInventory_id())) {
+
+            if (inventoryRepository.getInventoryByPart(sparePart) == null) {
                 throw new CustomException(
                         "inventory is not configured for spare part: "
                                 + sparePart.getPartID()
                 );
             }
-            Inventory inventory = modelMapper.map(inventoryRepository.find(sparePart.getInventory().getInventory_id()), Inventory.class);
+            Inventory inventory = modelMapper.map(inventoryRepository.getInventoryByPart(sparePart), Inventory.class);
             inventory.setQuantity_on_hand(inventory.getQuantity_on_hand() + direction);
-            inventoryRepository.save(modelMapper.map(inventory, InventoryDTO.class));
+            inventoryRepository.save(inventory);
 
         }
 

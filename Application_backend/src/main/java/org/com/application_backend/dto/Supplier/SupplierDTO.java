@@ -1,18 +1,29 @@
 package org.com.application_backend.dto.Supplier;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.com.application_backend.entity.SparePart;
-
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Data
 public class SupplierDTO {
-    private String SupplierID;
+
+    @JsonProperty("supplierID")
+    @JsonAlias({"SupplierID", "supplierID"})
+    private String supplierID;
+
     private String name;
     private int phone;
+
+    @NotBlank
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
+            message = "Invalid email address"
+    )
     private String email;
+
 }

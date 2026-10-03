@@ -1,5 +1,6 @@
 package org.com.application_backend.controller.customer;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.com.application_backend.dto.Customer.CustomerDTO;
 import org.com.application_backend.service.custom.customer.CustomerService;
@@ -25,6 +26,7 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity<APIResponse<List<CustomerDTO>>> getAllCustomers() throws Exception {
+        System.out.println("getAllCustomers");
         return ResponseEntity.ok(new APIResponse<>(200, "Customers retrieved successfully", customerService.getAll()));
     }
 
@@ -34,12 +36,12 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<APIResponse<CustomerDTO>> saveCustomer(@RequestBody CustomerDTO dto) throws Exception {
+    public ResponseEntity<APIResponse<CustomerDTO>> saveCustomer(@Valid @RequestBody CustomerDTO dto) throws Exception {
         return ResponseEntity.ok(new APIResponse<>(200, "Customer created successfully", customerService.save(dto)));
     }
 
     @PutMapping
-    public ResponseEntity<APIResponse<CustomerDTO>> updateCustomer(@RequestBody CustomerDTO dto) throws Exception {
+    public ResponseEntity<APIResponse<CustomerDTO>> updateCustomer(@Valid @RequestBody CustomerDTO dto) throws Exception {
         return ResponseEntity.ok(new APIResponse<>(200, "Customer updated successfully", customerService.update(dto)));
     }
 

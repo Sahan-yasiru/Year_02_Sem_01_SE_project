@@ -5,7 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.com.application_backend.entity.order.Order;
 import org.com.application_backend.entity.user.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,12 +26,13 @@ public class Customer {
     private String email;
 
     @Column(unique = true, nullable = false)
-    private String phoneNumber;
+    private int phoneNumber;
 
     @Column(nullable = false)
     private String address;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private User user;
+
 
 }

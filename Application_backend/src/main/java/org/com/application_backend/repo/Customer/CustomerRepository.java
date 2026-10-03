@@ -11,7 +11,7 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, String> {
     boolean existsByEmail(String email);
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByPhoneNumber(int phoneNumber);
 
     @Query("SELECT c.customerID FROM Customer c ORDER BY  c.customerID DESC")
     List<String> getLastCustomer();

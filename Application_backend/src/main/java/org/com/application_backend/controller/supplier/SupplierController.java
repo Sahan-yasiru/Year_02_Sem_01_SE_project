@@ -35,6 +35,7 @@ public class SupplierController {
 
     @PostMapping
     public ResponseEntity<APIResponse<SupplierDTO>> saveSupplier(@RequestBody SupplierDTO dto) throws Exception {
+        System.out.println(dto);
         return ResponseEntity.ok(new APIResponse<>(200, "Supplier created successfully", supplierService.save(dto)));
     }
 

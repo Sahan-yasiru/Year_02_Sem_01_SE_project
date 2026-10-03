@@ -29,8 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO update(CategoryDTO dto) throws Exception {
-        if (ifExit(dto.getCategoryName())) {
-            throw new CustomException("category name already registered");
+        if (!categoryRepository.existsById(dto.getCategoryId())) {
+            throw new CustomException("category not found");
         }
         return modelMapper.map(categoryRepository.save(modelMapper.map(dto, Category.class)), CategoryDTO.class);
     }

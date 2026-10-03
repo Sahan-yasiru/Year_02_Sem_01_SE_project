@@ -1,11 +1,8 @@
 package org.com.application_backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.engine.internal.Cascade;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,9 +12,11 @@ import lombok.*;
 public class Inventory {
     @Id
     private String inventory_id;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sparepartID")
     private SparePart part;
+
     private int quantity_on_hand;
 
     //This tells the system when it is time to order more stock.
@@ -26,4 +25,6 @@ public class Inventory {
     /* Detects stale stock updates in paths that do not take the pessimistic lock. */
     @Version
     private Long version;
+
+
 }

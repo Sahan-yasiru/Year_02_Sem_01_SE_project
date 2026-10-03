@@ -34,11 +34,6 @@ public class SparePart {
     @JoinColumn(name = "categoryID")
     private Category category;
 
-    @OneToOne
-    @JoinColumn(name = "inventoryID")
-    private Inventory inventory;
-
-    private String partNum;
     private String partName;
     private double costPrice;
     private double sellPrice;

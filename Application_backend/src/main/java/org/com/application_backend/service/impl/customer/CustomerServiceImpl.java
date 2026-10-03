@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (!existingCustomer.getEmail().equalsIgnoreCase(dto.getEmail()) && customerRepository.existsByEmail(dto.getEmail())) {
             throw new CustomException("Customer email is already registered to another customer");
         }
-        if (!existingCustomer.getPhoneNumber().equals(dto.getPhoneNumber()) && customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+        if (!(existingCustomer.getPhoneNumber() ==dto.getPhoneNumber()) && customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new CustomException("Customer phone is already registered to another customer");
         }
         return modelMapper.map(customerRepository.save(modelMapper.map(dto, Customer.class)), CustomerDTO.class);

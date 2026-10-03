@@ -3,6 +3,7 @@ package org.com.application_backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.entity.Brand;
 import org.com.application_backend.entity.Inventory;
 import org.com.application_backend.entity.Supplier.Supplier;
@@ -15,12 +16,10 @@ import java.util.List;
 @Data
 public class SparePartDTO {
     private String partID;
-    private List<Supplier> suppliers;
-    private Brand brand;
-    private Category category;
-    private Inventory inventory;
-    private String partNum;
     private String partName;
+    private List<SupplierDTO> suppliers;
+    private BrandDTO brand;
+    private CategoryDTO category;
     private double costPrice;
     private double sellPrice;
 }

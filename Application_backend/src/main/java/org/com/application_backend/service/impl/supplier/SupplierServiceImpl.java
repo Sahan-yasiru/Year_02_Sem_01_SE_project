@@ -24,13 +24,26 @@ public class SupplierServiceImpl implements SupplierService {
         if (ifExit(dto.getSupplierID())) {
             throw new CustomException("supplier already registered");
         }
+        validateSupplier(dto);
         return modelMapper.map(supplierRepository.save(modelMapper.map(dto, Supplier.class)), SupplierDTO.class);
+    }
+    public void validateSupplier(SupplierDTO dto) throws CustomException {
+
+        if(supplierRepository.existsByEmail(dto.getEmail())) {
+            throw new CustomException("supplier E-mail is already registered");
+        }
+        if(supplierRepository.existsByPhone(dto.getPhone())) {
+            throw new CustomException("supplier Phone number is already registered");
+        }
     }
 
     @Override
     public SupplierDTO update(SupplierDTO dto) throws Exception {
         if (!ifExit(dto.getSupplierID())) {
             throw new CustomException("supplier not found");
+        }
+        if(!find(dto.getSupplierID()).equals(dto)) {
+            validateSupplier(dto);
         }
         return modelMapper.map(supplierRepository.save(modelMapper.map(dto, Supplier.class)), SupplierDTO.class);
     }
