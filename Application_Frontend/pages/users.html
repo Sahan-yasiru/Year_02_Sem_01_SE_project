@@ -1,0 +1,190 @@
+<!-- users.html — User Management Page (loaded into #main-content via SPA navigation) -->
+
+<div class="page-enter">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-header-title">User Management</h1>
+            <p class="page-header-sub">
+                Manage system user accounts, roles, and security credentials.
+                <span id="user-count" style="color:var(--color-text-muted);font-weight:600;"></span>
+            </p>
+        </div>
+        <button id="btn-add-user" class="btn btn-orange">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            <span>Add User</span>
+        </button>
+    </div>
+
+    <!-- ── Table Card ── -->
+    <div class="card">
+        <!-- Card header: search + role filter -->
+        <div class="card-header" style="padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+            <div class="search-bar">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                </svg>
+                <input id="user-search-input" type="text" placeholder="Search by username, email, phone..." autocomplete="off" spellcheck="false"/>
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;">
+                <select id="user-role-filter" class="form-control form-select" style="min-width:160px;padding:8px 12px;font-size:13px;">
+                    <option value="">All Roles</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Store_Manager">Store Manager</option>
+                    <option value="Sales_Staff">Sales Staff</option>
+                    <option value="Customer">Customer</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th class="hide-mobile">Email</th>
+                        <th class="hide-mobile">Phone</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="user-tbody">
+                    <!-- Loaded dynamically via js/users.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     ADD / EDIT USER MODAL
+     ═══════════════════════════════════════════════════ -->
+<div id="user-modal" class="modal-overlay">
+    <div class="modal" style="max-width:540px;" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+
+        <!-- Header -->
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="user-modal-title">Add New User</div>
+                <div class="modal-subtitle" id="user-modal-subtitle">Fill in user credentials and assign role</div>
+            </div>
+            <button id="user-modal-close-btn" class="modal-close-btn" aria-label="Close modal">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="user-form" novalidate style="display:flex;flex-direction:column;flex:1;min-height:0;margin:0;">
+
+            <!-- Body -->
+            <div class="modal-body" style="flex:1;overflow-y:auto;">
+
+                <!-- User Identity -->
+                <div class="form-section-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                    Account Credentials
+                </div>
+
+                <input id="field-user-id" type="hidden"/>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="field-user-username">Username <span class="required">*</span></label>
+                        <input id="field-user-username" type="text" class="form-control" placeholder="e.g. john_doe" required/>
+                        <div id="err-user-username" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="field-user-role">Role <span class="required">*</span></label>
+                        <select id="field-user-role" class="form-control form-select" required>
+                            <option value="Admin">Admin</option>
+                            <option value="Owner">Owner</option>
+                            <option value="Store_Manager">Store Manager</option>
+                            <option value="Sales_Staff" selected>Sales Staff</option>
+                            <option value="Customer">Customer</option>
+                        </select>
+                        <div id="err-user-role" class="form-error"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="field-user-password">Password <span class="required">*</span></label>
+                    <div style="position:relative;">
+                        <input id="field-user-password" type="password" class="form-control" placeholder="Enter password" style="padding-right:40px;" required/>
+                        <button type="button" id="btn-toggle-pwd" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--color-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;" title="Toggle Password Visibility">
+                            <svg id="pwd-eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="err-user-password" class="form-error"></div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="form-section-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                    Contact Details
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="field-user-email">Email Address <span class="required">*</span></label>
+                        <input id="field-user-email" type="email" class="form-control" placeholder="user@example.com" required/>
+                        <div id="err-user-email" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="field-user-phone">Phone Number</label>
+                        <input id="field-user-phone" type="tel" class="form-control" placeholder="e.g. 0771234567"/>
+                        <div id="err-user-phone" class="form-error"></div>
+                    </div>
+                </div>
+
+            </div><!-- /modal-body -->
+
+            <!-- Modal Footer -->
+            <div class="modal-footer" style="flex-shrink:0;">
+                <button type="button" id="user-cancel-btn" class="btn btn-outline">Cancel</button>
+                <button type="submit" id="user-save-btn" class="btn btn-primary">
+                    <span id="user-submit-text">Add User</span>
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     DELETE CONFIRMATION MODAL
+     ═══════════════════════════════════════════════════ -->
+<div id="user-delete-confirm" class="modal-overlay">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
+        <div class="confirm-icon warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+            </svg>
+        </div>
+        <div class="confirm-title">Delete User Account?</div>
+        <div class="confirm-msg">
+            Are you sure you want to delete user <strong id="user-delete-name" style="color:var(--color-text-main);">this user</strong>?<br/>
+            This user will lose access to the system.
+        </div>
+        <div class="confirm-actions">
+            <button id="user-confirm-cancel-btn" class="btn btn-outline">Cancel</button>
+            <button id="user-confirm-delete-btn" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+<!-- spare-parts.html — Spare Parts Management Page (loaded into #main-content via SPA navigation) -->
+
+<div class="page-enter">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-header-title">Spare Parts</h1>
+            <p class="page-header-sub">
+                Manage auto parts catalog, pricing and supplier links.
+                <span id="sp-count" style="color:var(--color-text-muted);font-weight:600;"></span>
+            </p>
+        </div>
+        <button id="btn-add-sp" class="btn btn-orange" onclick="openAddSparePartModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            <span>Add Spare Part</span>
+        </button>
+    </div>
+
+    <!-- ── Table Card ── -->
+    <div class="card">
+        <div class="card-header" style="padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:0;">
+            <div>
+                <div class="card-title">All Spare Parts</div>
+                <div class="card-subtitle">Catalog of parts with pricing and linked suppliers</div>
+            </div>
+            <div class="search-bar">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                </svg>
+                <input
+                    id="sp-search-input"
+                    type="text"
+                    placeholder="Search by ID, part name, brand, category..."
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Part</th>
+                        <th class="hide-mobile">Category</th>
+                        <th class="hide-mobile">Brand</th>
+                        <th class="hide-mobile">Suppliers</th>
+                        <th class="hide-mobile">Cost Price</th>
+                        <th>Sell Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="sp-tbody">
+                    <!-- Populated by spare-parts.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div><!-- /page-enter -->
+
+
+<!-- ═══════════════════════════════════════════════════
+     ADD / EDIT SPARE PART MODAL
+     ═══════════════════════════════════════════════════ -->
+<div id="sp-modal" class="modal-overlay">
+    <div class="modal" style="max-width:600px;" role="dialog" aria-modal="true" aria-labelledby="sp-modal-title">
+
+        <!-- Header -->
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="sp-modal-title">Add New Spare Part</div>
+                <div class="modal-subtitle" id="sp-modal-subtitle">Fill in part details and link suppliers</div>
+            </div>
+            <button id="sp-modal-close-btn" class="modal-close-btn" aria-label="Close modal">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="sp-form" novalidate style="display:flex;flex-direction:column;flex:1;min-height:0;margin:0;">
+
+            <!-- Body -->
+            <div class="modal-body" style="flex:1;overflow-y:auto;">
+
+                <!-- Part Identity -->
+                <div class="form-section-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+                    Part Information
+                </div>
+
+                <input id="field-sp-id" type="hidden"/>
+
+                <!-- Part ID badge (shown in edit mode) -->
+                <div id="sp-id-display" class="form-group" style="display:none;">
+                    <label class="form-label">Part ID</label>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <code id="sp-id-badge" style="font-size:13px;font-weight:700;letter-spacing:1px;background:rgba(0,242,254,0.1);color:var(--color-accent-cyan);border:1px solid rgba(0,242,254,0.3);padding:4px 10px;border-radius:6px;font-family:'Courier New',monospace;"></code>
+                        <span style="font-size:11px;color:var(--color-text-muted);">Auto-generated</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="field-sp-name">Part Name <span class="required">*</span></label>
+                    <input id="field-sp-name" type="text" class="form-control" placeholder="e.g. Brake Pad, Oil Filter, Timing Belt" required/>
+                    <div id="err-sp-name" class="form-error"></div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Brand -->
+                    <div class="form-group">
+                        <label class="form-label" for="field-sp-brand">Brand <span class="required">*</span></label>
+                        <select id="field-sp-brand" class="form-control form-select" required>
+                            <option value="">— Select Brand —</option>
+                        </select>
+                        <div id="err-sp-brand" class="form-error"></div>
+                    </div>
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label class="form-label" for="field-sp-category">Category <span class="required">*</span></label>
+                        <select id="field-sp-category" class="form-control form-select" required>
+                            <option value="">— Select Category —</option>
+                        </select>
+                        <div id="err-sp-category" class="form-error"></div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="form-section-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Pricing
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="field-sp-cost">Cost Price (Rs.) <span class="required">*</span></label>
+                        <input id="field-sp-cost" type="number" class="form-control" placeholder="0.00" min="0" step="0.01" required/>
+                        <div id="err-sp-cost" class="form-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="field-sp-sell">Sell Price (Rs.) <span class="required">*</span></label>
+                        <input id="field-sp-sell" type="number" class="form-control" placeholder="0.00" min="0" step="0.01" required/>
+                        <div id="err-sp-sell" class="form-error"></div>
+                    </div>
+                </div>
+
+                <!-- Suppliers (Multi-select) -->
+                <div class="form-section-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-1.168-.92-2.008-2.073-1.957a48.507 48.507 0 00-3.853.345M4.5 18.75h-2.25m2.25 0H4.5m0 0H3.375c-.621 0-1.125-.504-1.125-1.125V14.25"/></svg>
+                    Suppliers
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Select Suppliers <span class="required">*</span></label>
+                    <!-- Supplier Multi-select Dropdown -->
+                    <div id="sp-supplier-dropdown" class="sp-multiselect" tabindex="0">
+                        <div id="sp-multiselect-trigger" class="sp-multiselect-trigger">
+                            <div class="sp-selected-tags" id="sp-selected-tags">
+                                <span class="sp-placeholder">— Click to select suppliers —</span>
+                            </div>
+                            <svg class="sp-dropdown-arrow" id="sp-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                            </svg>
+                        </div>
+                        <div class="sp-multiselect-menu" id="sp-multiselect-menu">
+                            <div class="sp-menu-search">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607Z"/></svg>
+                                <input id="sp-supplier-search" type="text" placeholder="Search suppliers..." oninput="filterSpSuppliers(this.value)" autocomplete="off"/>
+                            </div>
+                            <div class="sp-menu-list" id="sp-supplier-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="err-sp-suppliers" class="form-error"></div>
+                </div>
+
+                <!-- Inventory Creation Toggle (Add Mode Only) -->
+                <div id="sp-inventory-toggle-group" class="form-group" style="margin-top:16px;padding:12px 14px;background:rgba(0,117,255,0.08);border:1px solid rgba(0,117,255,0.2);border-radius:10px;">
+                    <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin:0;">
+                        <div style="display:flex;flex-direction:column;gap:2px;">
+                            <span style="font-size:13px;font-weight:600;color:#E2E8F0;">Create Initial Inventory Record</span>
+                            <span style="font-size:11.5px;color:var(--color-text-muted);">Automatically initialize stock tracking for this part (Qty: 0, Reorder: 0)</span>
+                        </div>
+                        <input id="field-sp-create-inventory" type="checkbox" checked style="width:18px;height:18px;accent-color:var(--color-accent);cursor:pointer;"/>
+                    </label>
+                </div>
+
+            </div><!-- /modal-body -->
+
+            <!-- Modal Footer (Sticky) -->
+            <div class="modal-footer" style="flex-shrink:0;">
+                <button type="button" id="sp-cancel-btn" class="btn btn-outline">Cancel</button>
+                <button type="submit" id="sp-save-btn" class="btn btn-primary">
+                    <span id="sp-submit-text">Add Spare Part</span>
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     DELETE CONFIRMATION MODAL
+     ═══════════════════════════════════════════════════ -->
+<div id="sp-delete-confirm" class="modal-overlay">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
+        <div class="confirm-icon warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+            </svg>
+        </div>
+        <div class="confirm-title">Delete Spare Part?</div>
+        <div class="confirm-msg">
+            Are you sure you want to delete <strong id="sp-delete-name" style="color:var(--color-text-main);">this part</strong>?<br/>
+            This action cannot be undone.
+        </div>
+        <div class="confirm-actions">
+            <button id="sp-confirm-cancel-btn" class="btn btn-outline">Cancel</button>
+            <button id="sp-confirm-delete-btn" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</div>
