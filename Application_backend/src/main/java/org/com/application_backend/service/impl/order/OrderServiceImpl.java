@@ -1,9 +1,6 @@
 package org.com.application_backend.service.impl.order;
 
 import lombok.RequiredArgsConstructor;
-import org.com.application_backend.dto.Customer.CustomerDTO;
-import org.com.application_backend.dto.InventoryDTO;
-import org.com.application_backend.dto.SparePartDTO;
 import org.com.application_backend.dto.order.OrderDTO;
 import org.com.application_backend.entity.Customer.Customer;
 import org.com.application_backend.entity.Inventory;
@@ -139,6 +136,7 @@ public class OrderServiceImpl implements OrderService {
         if (order.getOrderStatus() != OrderStatus.CANCELLED) {
             throw new CustomException("only cancelled orders may be deleted");
         }
+        releaseStock(order.getSpareParts());
         orderRepository.delete(order);
     }
 
@@ -184,7 +182,8 @@ public class OrderServiceImpl implements OrderService {
         adjustStock(parts, -1, "insufficient stock for spare part: ");
     }
 
-    private void releaseStock(List<SparePart> parts) throws Exception {
+    @Override
+    public void releaseStock(List<SparePart> parts) throws Exception {
         adjustStock(parts, 1, "");
     }
 

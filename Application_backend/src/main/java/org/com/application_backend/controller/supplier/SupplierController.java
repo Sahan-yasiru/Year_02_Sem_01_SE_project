@@ -1,5 +1,6 @@
 package org.com.application_backend.controller.supplier;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.service.custom.supplier.SupplierService;
@@ -34,13 +35,13 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ResponseEntity<APIResponse<SupplierDTO>> saveSupplier(@RequestBody SupplierDTO dto) throws Exception {
+    public ResponseEntity<APIResponse<SupplierDTO>> saveSupplier(@RequestBody @Valid SupplierDTO dto) throws Exception {
         System.out.println(dto);
         return ResponseEntity.ok(new APIResponse<>(200, "Supplier created successfully", supplierService.save(dto)));
     }
 
     @PutMapping
-    public ResponseEntity<APIResponse<SupplierDTO>> updateSupplier(@RequestBody SupplierDTO dto) throws Exception {
+    public ResponseEntity<APIResponse<SupplierDTO>> updateSupplier(@RequestBody @Valid SupplierDTO dto) throws Exception {
         return ResponseEntity.ok(new APIResponse<>(200, "Supplier updated successfully", supplierService.update(dto)));
     }
 
