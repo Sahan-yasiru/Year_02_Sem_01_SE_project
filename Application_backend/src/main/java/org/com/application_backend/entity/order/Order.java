@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.com.application_backend.entity.Customer.Customer;
 import org.com.application_backend.entity.SparePart;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 import java.util.List;
@@ -21,12 +23,11 @@ public class Order {
     @Id
     private String orderId;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customerID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "customerID", nullable = true)
     private Customer customer;
 
-    // A catalogue part can appear in many different orders.  The join table is
-    // intentionally not cascaded: orders never create or delete catalogue data.
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "customer_order_spare_part",
     joinColumns = @JoinColumn(name = "order_id"),
@@ -46,7 +47,4 @@ public class Order {
     private OrderStatus orderStatus;
 
     private String address;
-
-
-
 }

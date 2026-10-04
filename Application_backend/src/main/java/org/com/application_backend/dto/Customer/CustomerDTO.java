@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.com.application_backend.dto.user.UserDTO;
 import org.com.application_backend.entity.Customer.CustomerName;
 import org.com.application_backend.entity.user.User;
 import org.hibernate.annotations.DialectOverride;
@@ -24,5 +25,5 @@ public class CustomerDTO {
     private String email;
     private int phoneNumber;
     private String address;
-    private User user;
+    private UserDTO user;
 }

@@ -137,7 +137,9 @@ function navigate(page, title) {
                     category:      'initCategoryPage',
                     'spare-parts': 'initSparePartsPage',
                     inventory:     'initInventoryPage',
-                    'customer-returns': 'initCustomerReturnsPage',
+                    'customer-returns':       'initCustomerReturnsPage',
+                    'customer-transactions':  'initCustomerTransactionsPage',
+                    'supplier-transactions':  'initSupplierTransactionsPage',
                 };
                 const fnName = initFnMap[page];
                 if (fnName && typeof window[fnName] === 'function') {

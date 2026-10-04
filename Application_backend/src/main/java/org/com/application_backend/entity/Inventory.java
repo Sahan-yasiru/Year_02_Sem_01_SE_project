@@ -2,6 +2,8 @@ package org.com.application_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.engine.internal.Cascade;
 
 @AllArgsConstructor
@@ -15,6 +17,7 @@ public class Inventory {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sparepartID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SparePart part;
 
     private int quantity_on_hand;

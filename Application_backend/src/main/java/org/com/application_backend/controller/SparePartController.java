@@ -28,6 +28,11 @@ public class SparePartController {
         return ResponseEntity.ok(new APIResponse<>(200, "Spare parts retrieved successfully", sparePartService.getAll()));
     }
 
+    @GetMapping("/by-supplier/{supplierId}")
+    public ResponseEntity<APIResponse<List<SparePartDTO>>> getSparePartsBySupplier(@PathVariable String supplierId) throws Exception {
+        return ResponseEntity.ok(new APIResponse<>(200, "Spare parts for supplier retrieved successfully", sparePartService.getBySupplier(supplierId)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<SparePartDTO>> getSparePart(@PathVariable String id) throws Exception {
         return ResponseEntity.ok(new APIResponse<>(200, "Spare part retrieved successfully", sparePartService.find(id)));

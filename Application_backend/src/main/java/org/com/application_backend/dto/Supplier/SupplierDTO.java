@@ -17,7 +17,7 @@ public class SupplierDTO {
     private String supplierID;
 
     private String name;
-    private int phone;
+    private Integer phone;
 
     @NotBlank
     @Pattern(

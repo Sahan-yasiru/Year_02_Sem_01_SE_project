@@ -1,0 +1,301 @@
+<!-- ═══════════════════════════════════════════════════════════
+     CUSTOMER TRANSACTIONS PAGE  —  pages/customer-transactions.html
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Customer Transactions</h1>
+        <p class="page-subtitle">Record and manage customer sale transactions and payment records</p>
+    </div>
+    <button class="btn btn-primary" id="btn-new-transaction" onclick="openTransactionModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+        </svg>
+        New Transaction
+    </button>
+</div>
+
+<!-- Stats Row -->
+<div class="txn-stats-row" id="txn-stats-row">
+    <div class="txn-stat-card">
+        <div class="txn-stat-icon" style="background:rgba(99,102,241,0.15);color:#818cf8;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/>
+            </svg>
+        </div>
+        <div class="txn-stat-info">
+            <div class="txn-stat-label">Total Transactions</div>
+            <div class="txn-stat-value" id="txn-stat-total">—</div>
+        </div>
+    </div>
+    <div class="txn-stat-card">
+        <div class="txn-stat-icon" style="background:rgba(16,185,129,0.15);color:#34d399;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div class="txn-stat-info">
+            <div class="txn-stat-label">Total Revenue</div>
+            <div class="txn-stat-value" id="txn-stat-revenue">—</div>
+        </div>
+    </div>
+    <div class="txn-stat-card">
+        <div class="txn-stat-icon" style="background:rgba(245,158,11,0.15);color:#fbbf24;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/>
+            </svg>
+        </div>
+        <div class="txn-stat-info">
+            <div class="txn-stat-label">Cash on Delivery</div>
+            <div class="txn-stat-value" id="txn-stat-cod">—</div>
+        </div>
+    </div>
+    <div class="txn-stat-card">
+        <div class="txn-stat-icon" style="background:rgba(59,130,246,0.15);color:#60a5fa;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253M3 12a8.96 8.96 0 00.284 2.253"/>
+            </svg>
+        </div>
+        <div class="txn-stat-info">
+            <div class="txn-stat-label">Online Payments</div>
+            <div class="txn-stat-value" id="txn-stat-online">—</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="card">
+    <div class="card-header" style="padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div class="search-bar">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+            </svg>
+            <input type="text" id="txn-search" placeholder="Search by Sale ID, Order ID, or Customer…" oninput="filterTransactions()" autocomplete="off" spellcheck="false"/>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <!-- Payment method filter -->
+            <select id="txn-filter-method" class="form-input" style="min-width:160px;padding:8px 12px;font-size:0.85rem;" onchange="filterTransactions()">
+                <option value="">All Payment Methods</option>
+                <option value="CASH_ON_DELIVERY">Cash on Delivery</option>
+                <option value="ONLINE_PAYMENT">Online Payment</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadTransactions()" title="Refresh">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <table class="table" id="txn-table">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Date</th>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th style="text-align:right;">Amount</th>
+                    <th>Payment Method</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="txn-tbody">
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:40px;color:var(--color-text-muted);">
+                        <div class="spinner-sm" style="display:inline-block;margin-right:8px;"></div> Loading transactions…
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="txn-empty" class="empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/>
+            </svg>
+        </div>
+        <div class="empty-state-title">No transactions found</div>
+        <div class="empty-state-msg">Record a new customer transaction using the button above.</div>
+    </div>
+</div>
+
+<!-- ═══════════════════ ADD / EDIT MODAL ═══════════════════ -->
+<div class="modal-overlay" id="txn-modal-overlay" style="display:none;">
+    <div class="modal" style="max-width:520px;width:95%;" id="txn-modal">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="txn-modal-title">New Transaction</h2>
+                <p class="modal-subtitle" id="txn-modal-subtitle">Record a customer payment</p>
+            </div>
+            <button class="modal-close" onclick="closeTransactionModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <form id="txn-form" onsubmit="submitTransactionForm(event)" autocomplete="off">
+                <input type="hidden" id="txn-is-edit" value="false"/>
+                <input type="hidden" id="txn-edit-id" value=""/>
+
+                <!-- Order Selection -->
+                <div class="form-group">
+                    <label class="form-label" for="txn-order-id">Order <span class="required">*</span></label>
+                    <select id="txn-order-id" class="form-input" required>
+                        <option value="">— Select Order —</option>
+                    </select>
+                </div>
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label class="form-label" for="txn-date">Transaction Date <span class="required">*</span></label>
+                    <input type="date" id="txn-date" class="form-input" required/>
+                </div>
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label class="form-label" for="txn-amount">Amount (Rs) <span class="required">*</span></label>
+                    <input type="number" id="txn-amount" class="form-input" placeholder="0.00" min="0" step="0.01" required/>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="form-group">
+                    <label class="form-label" for="txn-payment-method">Payment Method <span class="required">*</span></label>
+                    <select id="txn-payment-method" class="form-input" required>
+                        <option value="">— Select Method —</option>
+                        <option value="CASH_ON_DELIVERY">Cash on Delivery</option>
+                        <option value="ONLINE_PAYMENT">Online Payment</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeTransactionModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="txn-submit-btn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Save Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ VIEW MODAL ═══════════════════ -->
+<div class="modal-overlay" id="txn-view-overlay" style="display:none;">
+    <div class="modal" style="max-width:500px;width:95%;">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title">Transaction Details</h2>
+                <p class="modal-subtitle" id="txn-view-subtitle">—</p>
+            </div>
+            <button class="modal-close" onclick="closeViewTransactionModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body" id="txn-view-body">
+            <!-- injected by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ CONFIRM DELETE ═══════════════════ -->
+<div class="confirm-overlay" id="txn-confirm-overlay" style="display:none;">
+    <div class="confirm-box">
+        <div class="confirm-icon danger">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+            </svg>
+        </div>
+        <div class="confirm-title">Delete Transaction?</div>
+        <div class="confirm-msg">Are you sure you want to delete Sale ID <strong id="txn-delete-id-text"></strong>? This action cannot be undone.</div>
+        <div class="confirm-actions">
+            <button class="btn btn-ghost" onclick="closeDeleteTransactionConfirm()">Cancel</button>
+            <button class="btn btn-danger" id="txn-confirm-delete-btn" onclick="confirmDeleteTransaction()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ── Customer Transactions Page Local Styles ── */
+.txn-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.txn-stat-card {
+    background: var(--color-card);
+    border: var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.18s, box-shadow 0.18s;
+    backdrop-filter: var(--glass-blur);
+}
+.txn-stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+.txn-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.txn-stat-info { flex: 1; }
+.txn-stat-label { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 2px; }
+.txn-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--color-text-main); line-height: 1.2; }
+
+/* Payment method badges */
+.badge-cod {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(245,158,11,0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.badge-online {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(59,130,246,0.12);
+    color: #60a5fa;
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* View modal field rows */
+.txn-view-section { margin-bottom: 18px; }
+.txn-view-section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.txn-view-field {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.87rem;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+.txn-view-field:last-child { border-bottom: none; }
+.txn-view-field-label { color: var(--color-text-muted); }
+.txn-view-field-value { font-weight: 500; color: var(--color-text-main); text-align: right; }
+</style>

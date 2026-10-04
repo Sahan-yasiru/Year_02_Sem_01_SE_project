@@ -3,6 +3,8 @@ package org.com.application_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.com.application_backend.entity.Supplier.Supplier;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -28,10 +30,12 @@ public class SparePart {
 
     @ManyToOne
     @JoinColumn(name = "brandID")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Brand brand;
 
     @ManyToOne
     @JoinColumn(name = "categoryID")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Category category;
 
     private String partName;

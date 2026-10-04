@@ -133,6 +133,9 @@ public class OrderServiceImpl implements OrderService {
     public void delete(String id) throws Exception {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new CustomException("order not found"));
+        if(order.getOrderStatus()==OrderStatus.RETURNED){
+            throw new CustomException("remove customer return recode fist ");
+        }
         if (order.getOrderStatus() != OrderStatus.CANCELLED) {
             throw new CustomException("only cancelled orders may be deleted");
         }
@@ -197,6 +200,7 @@ public class OrderServiceImpl implements OrderService {
                 );
             }
             Inventory inventory = modelMapper.map(inventoryRepository.getInventoryByPart(sparePart), Inventory.class);
+            if(inventory.getQuantity_on_hand()==0) throw new CustomException(insufficientStockMessage);
             inventory.setQuantity_on_hand(inventory.getQuantity_on_hand() + direction);
             inventoryRepository.save(inventory);
 

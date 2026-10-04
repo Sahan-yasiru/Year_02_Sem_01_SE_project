@@ -3,15 +3,19 @@ package org.com.application_backend.service.impl.customer;
 import lombok.AllArgsConstructor;
 import org.com.application_backend.dto.Customer.CustomerDTO;
 import org.com.application_backend.entity.Customer.Customer;
+import org.com.application_backend.entity.order.Order;
 import org.com.application_backend.exception.CustomException;
 import org.com.application_backend.repo.Customer.CustomerRepository;
-import org.com.application_backend.service.custom.customer.CustomerService;
+import org.com.application_backend.repo.order.OrderRepository;
 import org.com.application_backend.service.custom.UserService;
+import org.com.application_backend.service.custom.customer.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Service
@@ -20,72 +24,127 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final OrderRepository orderRepository;
 
     @Override
+    @Transactional
     public CustomerDTO save(CustomerDTO dto) throws Exception {
+
         if (ifExit(dto.getCustomerID())) {
             throw new CustomException("Customer ID is already registered");
         }
+
         if (dto.getUser() != null && dto.getUser().getUsername() != null && userService.ifExit(dto.getUser().getUsername())) {
-            throw new CustomException("Customer user name is already registered");
+
+            throw new CustomException("Customer username is already registered");
         }
+
         if (customerRepository.existsByEmail(dto.getEmail())) {
             throw new CustomException("Customer email is already registered");
         }
+
         if (customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new CustomException("Customer phone is already registered");
         }
-        return modelMapper.map(customerRepository.save(modelMapper.map(dto, Customer.class)), CustomerDTO.class);
+
+        Customer customer = modelMapper.map(dto, Customer.class);
+
+        Customer savedCustomer = customerRepository.save(customer);
+
+        return modelMapper.map(savedCustomer, CustomerDTO.class);
     }
 
     @Override
+    @Transactional
     public CustomerDTO update(CustomerDTO dto) throws Exception {
-        Customer existingCustomer = customerRepository.findById(dto.getCustomerID())
-                .orElseThrow(() -> new CustomException("Customer not found"));
 
-        if (!existingCustomer.getEmail().equalsIgnoreCase(dto.getEmail()) && customerRepository.existsByEmail(dto.getEmail())) {
-            throw new CustomException("Customer email is already registered to another customer");
+        Customer existingCustomer = customerRepository.findById(dto.getCustomerID()).orElseThrow(() -> new CustomException("Customer not found"));
+
+        // Check email only if it was changed
+        if (!Objects.equals(existingCustomer.getEmail(), dto.getEmail())) {
+
+            if (customerRepository.existsByEmail(dto.getEmail())) {
+                throw new CustomException("Customer email is already registered to another customer");
+            }
+
+            existingCustomer.setEmail(dto.getEmail());
         }
-        if (!(existingCustomer.getPhoneNumber() ==dto.getPhoneNumber()) && customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
-            throw new CustomException("Customer phone is already registered to another customer");
+
+        // Check phone only if it was changed
+        if (!Objects.equals(existingCustomer.getPhoneNumber(), dto.getPhoneNumber())) {
+
+            if (customerRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+
+                throw new CustomException("Customer phone is already registered to another customer");
+            }
+
+            existingCustomer.setPhoneNumber(dto.getPhoneNumber());
         }
-        return modelMapper.map(customerRepository.save(modelMapper.map(dto, Customer.class)), CustomerDTO.class);
+
+        // Update other customer fields
+        existingCustomer.setAddress(dto.getAddress());
+        existingCustomer.setName(dto.getName());
+
+        Customer updatedCustomer = customerRepository.save(existingCustomer);
+
+        return modelMapper.map(updatedCustomer, CustomerDTO.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerDTO> getAll() throws Exception {
-        List<CustomerDTO> dtos = new ArrayList<>();
-        customerRepository.findAll().forEach(customer -> {
-            dtos.add(modelMapper.map(customer, CustomerDTO.class));
-        });
-        return dtos;
+
+        return customerRepository.findAll().stream().map(customer -> modelMapper.map(customer, CustomerDTO.class)).toList();
     }
 
     @Override
+    @Transactional
     public void delete(String id) throws Exception {
-        customerRepository.deleteById(id);
+
+        // Find customer
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomException("Customer not found"));
+
+        // Find all orders belonging to customer
+        List<Order> orders = orderRepository.findAllByCustomer(customer);
+
+        // Customer cannot be deleted while orders exist
+        if (!orders.isEmpty()) {
+
+            throw new CustomException("Cannot delete customer because they have " + orders.size() + " order(s). Delete the orders first.");
+        }
+
+        // Safe to delete
+        customerRepository.delete(customer);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerDTO find(String id) throws Exception {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomException("customer not found"));
+
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomException("Customer not found"));
+
         return modelMapper.map(customer, CustomerDTO.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean ifExit(String id) throws Exception {
         return customerRepository.existsById(id);
     }
 
+    @Transactional(readOnly = true)
     public String getLastID() {
+
         List<String> ids = customerRepository.getLastCustomer();
+
         if (ids == null || ids.isEmpty()) {
             return "C001";
         }
+
         int num = Integer.parseInt(ids.getFirst().substring(1));
+
         num++;
+
         return String.format("C%03d", num);
     }
 }
-

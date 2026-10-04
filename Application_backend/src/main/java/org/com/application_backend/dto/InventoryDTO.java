@@ -10,7 +10,7 @@ import org.com.application_backend.entity.SparePart;
 @Data
 public class InventoryDTO {
     private String inventory_id;
-    private SparePart part;
+    private SparePartDTO part;
     private int quantity_on_hand;
     private int reorder_threshold;
 }
