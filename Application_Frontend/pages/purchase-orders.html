@@ -432,6 +432,52 @@
 
 <style>
 /* ── Purchase Orders Page Styles ── */
+#po-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+#po-stats-row .stat-card {
+    background: var(--color-card);
+    border: var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.18s, box-shadow 0.18s;
+    backdrop-filter: var(--glass-blur);
+}
+#po-stats-row .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+#po-stats-row .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#po-stats-row .stat-info { flex: 1; }
+#po-stats-row .stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2px;
+}
+#po-stats-row .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    line-height: 1.2;
+}
+
 .po-supplier-prompt-box {
     display: flex;
     align-items: center;
