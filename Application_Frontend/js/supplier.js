@@ -19,6 +19,8 @@ let allSuppliers = [];       // Full list from backend
 let filteredSuppliers = [];  // After search filter
 let supplierToDelete = null; // ID pending delete confirmation
 let editingSupplierID = null; // ID being edited (null = adding new)
+let allSparePartsCatalog = []; // Catalog of all spare parts
+let selectedSuppliedPartIDs = new Set(); // Multi-select state for supplied parts
 
 /* =====================================================
    PAGE INITIALISATION
@@ -32,6 +34,9 @@ function initSupplierPage() {
     document.getElementById('supp-modal-close-btn')?.addEventListener('click', closeSupplierModal);
     document.getElementById('supp-confirm-cancel-btn')?.addEventListener('click', closeSupplierConfirm);
     document.getElementById('supp-confirm-delete-btn')?.addEventListener('click', confirmDeleteSupplier);
+    document.getElementById('supp-part-search-input')?.addEventListener('input', (e) => filterSupplierSpareParts(e.target.value));
+    document.getElementById('btn-select-all-parts')?.addEventListener('click', selectAllSupplierParts);
+    document.getElementById('btn-clear-all-parts')?.addEventListener('click', clearAllSupplierParts);
 
     // Close modal/confirm on overlay click
     document.getElementById('supplier-modal')?.addEventListener('click', (e) => {
@@ -43,6 +48,7 @@ function initSupplierPage() {
 
     // Load data
     loadSuppliersData();
+    loadSparePartsCatalog();
 }
 
 /* =====================================================
@@ -195,6 +201,113 @@ function generateSupplierID() {
 }
 
 /* =====================================================
+   SUPPLIED SPARE PARTS HELPERS
+   ===================================================== */
+async function loadSparePartsCatalog() {
+    try {
+        const parts = await api.get('/spare-part');
+        allSparePartsCatalog = Array.isArray(parts) ? parts : [];
+    } catch (err) {
+        console.warn('Failed to load spare parts catalog:', err);
+        allSparePartsCatalog = [];
+    }
+}
+
+function updateSuppliedPartsCountBadge() {
+    const badge = document.getElementById('supp-part-count-badge');
+    if (badge) {
+        badge.textContent = `${selectedSuppliedPartIDs.size} selected`;
+    }
+}
+
+function renderSupplierSparePartsList(filterText = '') {
+    const listEl = document.getElementById('supp-spare-parts-list');
+    if (!listEl) return;
+
+    const q = (filterText || '').toLowerCase();
+    const filtered = (allSparePartsCatalog || []).filter(p => {
+        const id   = (p.partID || '').toLowerCase();
+        const name = (p.partName || '').toLowerCase();
+        const brand = (p.brand?.brandName || '').toLowerCase();
+        const cat  = (p.category?.categoryName || '').toLowerCase();
+        return !q || id.includes(q) || name.includes(q) || brand.includes(q) || cat.includes(q);
+    });
+
+    if (filtered.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center;padding:16px;color:var(--color-text-muted);font-size:12px;">${allSparePartsCatalog.length === 0 ? 'No spare parts in catalog' : 'No matching spare parts'}</div>`;
+        return;
+    }
+
+    listEl.innerHTML = filtered.map(p => {
+        const isChecked = selectedSuppliedPartIDs.has(p.partID);
+        const brandName = p.brand?.brandName ? ` • ${escapeHtml(p.brand.brandName)}` : '';
+        const catName   = p.category?.categoryName ? ` • ${escapeHtml(p.category.categoryName)}` : '';
+        return `
+            <div class="supp-part-item ${isChecked ? 'checked' : ''}" data-pid="${escapeHtml(p.partID)}" style="
+                display:flex;align-items:center;justify-content:space-between;padding:8px 10px;
+                border-radius:6px;cursor:pointer;margin-bottom:4px;
+                background:${isChecked ? 'rgba(0,117,255,0.14)' : 'rgba(255,255,255,0.02)'};
+                border:1px solid ${isChecked ? 'rgba(0,117,255,0.4)' : 'rgba(255,255,255,0.06)'};
+                transition:all 0.15s ease;
+            ">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+                    <div style="
+                        width:16px;height:16px;border-radius:4px;flex-shrink:0;
+                        border:1.5px solid ${isChecked ? 'var(--color-accent)' : 'rgba(255,255,255,0.3)'};
+                        background:${isChecked ? 'var(--color-accent)' : 'transparent'};
+                        display:flex;align-items:center;justify-content:center;
+                        color:#000;font-size:10px;font-weight:bold;
+                    ">
+                        ${isChecked ? '✓' : ''}
+                    </div>
+                    <div style="display:flex;flex-direction:column;min-width:0;">
+                        <span style="font-size:13px;font-weight:600;color:#F1F5F9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            ${escapeHtml(p.partName || p.partID)}
+                        </span>
+                        <span style="font-size:11px;color:var(--color-text-muted);">
+                            <span style="font-family:monospace;color:var(--color-accent);">${escapeHtml(p.partID)}</span>${brandName}${catName}
+                        </span>
+                    </div>
+                </div>
+                <div style="font-size:12px;color:#34D399;font-weight:600;margin-left:8px;flex-shrink:0;">
+                    Rs. ${p.sellPrice != null ? p.sellPrice.toFixed(2) : '0.00'}
+                </div>
+            </div>`;
+    }).join('');
+
+    listEl.querySelectorAll('.supp-part-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const pid = item.dataset.pid;
+            if (selectedSuppliedPartIDs.has(pid)) {
+                selectedSuppliedPartIDs.delete(pid);
+            } else {
+                selectedSuppliedPartIDs.add(pid);
+            }
+            updateSuppliedPartsCountBadge();
+            renderSupplierSparePartsList(document.getElementById('supp-part-search-input')?.value || '');
+        });
+    });
+}
+
+function filterSupplierSpareParts(val) {
+    renderSupplierSparePartsList(val);
+}
+
+function selectAllSupplierParts() {
+    (allSparePartsCatalog || []).forEach(p => {
+        if (p.partID) selectedSuppliedPartIDs.add(p.partID);
+    });
+    updateSuppliedPartsCountBadge();
+    renderSupplierSparePartsList(document.getElementById('supp-part-search-input')?.value || '');
+}
+
+function clearAllSupplierParts() {
+    selectedSuppliedPartIDs.clear();
+    updateSuppliedPartsCountBadge();
+    renderSupplierSparePartsList(document.getElementById('supp-part-search-input')?.value || '');
+}
+
+/* =====================================================
    MODALS: OPEN / CLOSE
    ===================================================== */
 function openAddSupplierModal() {
@@ -215,6 +328,11 @@ function openAddSupplierModal() {
     if (titleEl)    titleEl.textContent    = 'Add New Supplier';
     if (subtitleEl) subtitleEl.textContent = 'Fill in supplier contact and details';
     if (btnText)    btnText.textContent    = 'Add Supplier';
+
+    selectedSuppliedPartIDs = new Set();
+    updateSuppliedPartsCountBadge();
+    renderSupplierSparePartsList();
+    loadSparePartsCatalog().then(() => renderSupplierSparePartsList());
 
     const modal = document.getElementById('supplier-modal');
     if (modal) {
@@ -255,6 +373,22 @@ function openEditSupplierModal(id) {
     if (subtitleEl) subtitleEl.textContent = `Editing ${s.name || ''}`;
     if (btnText)    btnText.textContent    = 'Save Changes';
 
+    selectedSuppliedPartIDs = new Set();
+    updateSuppliedPartsCountBadge();
+    renderSupplierSparePartsList();
+
+    // Load catalog and currently linked parts for this supplier
+    Promise.all([
+        allSparePartsCatalog.length > 0 ? Promise.resolve(allSparePartsCatalog) : loadSparePartsCatalog(),
+        api.get('/supplier/' + id + '/spare-parts').catch(() => api.get('/spare-part/by-supplier/' + id))
+    ]).then(([_, linkedParts]) => {
+        selectedSuppliedPartIDs = new Set((linkedParts || []).map(p => p.partID));
+        updateSuppliedPartsCountBadge();
+        renderSupplierSparePartsList(document.getElementById('supp-part-search-input')?.value || '');
+    }).catch(err => {
+        console.warn('Failed loading linked spare parts:', err);
+    });
+
     const modal = document.getElementById('supplier-modal');
     if (modal) {
         if (modal.parentElement !== document.body) document.body.appendChild(modal);
@@ -288,6 +422,13 @@ function clearSupplierForm() {
     });
     const dispEl = document.getElementById('supplierID-display');
     if (dispEl) dispEl.style.display = 'none';
+
+    selectedSuppliedPartIDs = new Set();
+    updateSuppliedPartsCountBadge();
+    const searchInput = document.getElementById('supp-part-search-input');
+    if (searchInput) searchInput.value = '';
+    renderSupplierSparePartsList();
+
     document.querySelectorAll('#supplier-form .form-control').forEach(el => el.classList.remove('error'));
     document.querySelectorAll('#supplier-form .form-error').forEach(el => { el.classList.remove('show'); el.textContent = ''; });
 }
@@ -354,6 +495,7 @@ async function onSupplierFormSubmit(e) {
     const payload = buildSupplierDTO();
 
     try {
+        let targetSupplierId = editingSupplierID;
         if (editingSupplierID) {
             const updated = await api.put('/supplier', payload);
             const idx = allSuppliers.findIndex(s => (s.supplierID || s.SupplierID) === editingSupplierID);
@@ -361,6 +503,16 @@ async function onSupplierFormSubmit(e) {
         } else {
             const created = await api.post('/supplier', payload);
             allSuppliers.unshift(created);
+            targetSupplierId = created?.supplierID || created?.SupplierID || payload.supplierID;
+        }
+
+        // Save supplier–spare part relationships using the existing spare_part_supplier table
+        if (targetSupplierId) {
+            try {
+                await api.put('/supplier/' + targetSupplierId + '/spare-parts', Array.from(selectedSuppliedPartIDs));
+            } catch (relErr) {
+                console.warn('Could not update supplier spare parts:', relErr);
+            }
         }
 
         filteredSuppliers = [...allSuppliers];
@@ -432,3 +584,6 @@ window.openSupplierDeleteConfirm = openSupplierDeleteConfirm;
 window.closeSupplierConfirm = closeSupplierConfirm;
 window.confirmDeleteSupplier = confirmDeleteSupplier;
 window.loadSuppliersData = loadSuppliersData;
+window.filterSupplierSpareParts = filterSupplierSpareParts;
+window.selectAllSupplierParts = selectAllSupplierParts;
+window.clearAllSupplierParts = clearAllSupplierParts;

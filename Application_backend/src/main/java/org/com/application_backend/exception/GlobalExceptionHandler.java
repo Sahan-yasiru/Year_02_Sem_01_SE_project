@@ -38,8 +38,29 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIResponse<Void>> handleMalformedRequest(HttpMessageNotReadableException e) {
         e.printStackTrace();
+
+        String message;
+
+        if (e.getMostSpecificCause() != null &&
+                e.getMostSpecificCause().getMessage() != null) {
+
+            message = e.getMostSpecificCause().getMessage();
+
+        } else if (e.getMessage() != null) {
+
+            message = e.getMessage();
+
+        } else {
+
+            message = "Malformed request body";
+        }
+
         return ResponseEntity.badRequest()
-                .body(new APIResponse<>(HttpStatus.BAD_REQUEST.value(), "Malformed request body", null));
+                .body(new APIResponse<>(
+                        HttpStatus.BAD_REQUEST.value(),
+                        message,
+                        null
+                ));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

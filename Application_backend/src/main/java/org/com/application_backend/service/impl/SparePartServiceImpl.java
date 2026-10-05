@@ -2,6 +2,9 @@ package org.com.application_backend.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.com.application_backend.dto.SparePartDTO;
+import org.com.application_backend.dto.Supplier.SupplierDTO;
+import org.com.application_backend.entity.Brand;
+import org.com.application_backend.entity.Category;
 import org.com.application_backend.entity.Inventory;
 import org.com.application_backend.entity.SparePart;
 import org.com.application_backend.entity.Supplier.Supplier;
@@ -47,6 +50,18 @@ public class SparePartServiceImpl implements SparePartService {
 
         SparePart sparePart = modelMapper.map(dto, SparePart.class);
 
+        if (dto.getSuppliers() != null) {
+            List<Supplier> suppliers = new ArrayList<>();
+            for (SupplierDTO sDto : dto.getSuppliers()) {
+                if (sDto != null && sDto.getSupplierID() != null) {
+                    supplierRepository.findById(sDto.getSupplierID()).ifPresent(suppliers::add);
+                }
+            }
+            sparePart.setSuppliers(suppliers);
+        } else {
+            sparePart.setSuppliers(new ArrayList<>());
+        }
+
         SparePart savedSparePart = sparePartRepository.save(sparePart);
 
         if (state) {
@@ -61,7 +76,7 @@ public class SparePartServiceImpl implements SparePartService {
             }
         }
 
-        return modelMapper.map(savedSparePart, SparePartDTO.class);
+        return toDTO(savedSparePart);
     }
 
     @Override
@@ -74,12 +89,31 @@ public class SparePartServiceImpl implements SparePartService {
         sparePart.setCostPrice(dto.getCostPrice());
         sparePart.setSellPrice(dto.getSellPrice());
 
-        // If your DTO contains suppliers, brand and category,
-        // update them here using their existing database entities.
+        if (dto.getSuppliers() != null) {
+            List<Supplier> suppliers = new ArrayList<>();
+            for (SupplierDTO sDto : dto.getSuppliers()) {
+                if (sDto != null && sDto.getSupplierID() != null) {
+                    supplierRepository.findById(sDto.getSupplierID()).ifPresent(suppliers::add);
+                }
+            }
+            if (sparePart.getSuppliers() == null) {
+                sparePart.setSuppliers(suppliers);
+            } else {
+                sparePart.getSuppliers().clear();
+                sparePart.getSuppliers().addAll(suppliers);
+            }
+        }
+
+        if (dto.getBrand() != null && dto.getBrand().getBrandID() != null) {
+            sparePart.setBrand(modelMapper.map(dto.getBrand(), Brand.class));
+        }
+        if (dto.getCategory() != null && dto.getCategory().getCategoryId() != 0) {
+            sparePart.setCategory(modelMapper.map(dto.getCategory(), Category.class));
+        }
 
         SparePart updatedSparePart = sparePartRepository.save(sparePart);
 
-        return modelMapper.map(updatedSparePart, SparePartDTO.class);
+        return toDTO(updatedSparePart);
     }
 
     @Override
@@ -88,7 +122,7 @@ public class SparePartServiceImpl implements SparePartService {
 
         List<SparePartDTO> dtos = new ArrayList<>();
 
-        sparePartRepository.findAll().forEach(sparePart -> dtos.add(modelMapper.map(sparePart, SparePartDTO.class)));
+        sparePartRepository.findAll().forEach(sparePart -> dtos.add(toDTO(sparePart)));
 
         return dtos;
     }
@@ -100,7 +134,7 @@ public class SparePartServiceImpl implements SparePartService {
                 .orElseThrow(() -> new CustomException("Supplier not found: " + supplierID));
         List<SparePartDTO> dtos = new ArrayList<>();
         sparePartRepository.findBySuppliers(supplier)
-                .forEach(sp -> dtos.add(modelMapper.map(sp, SparePartDTO.class)));
+                .forEach(sp -> dtos.add(toDTO(sp)));
         return dtos;
     }
 
@@ -146,7 +180,7 @@ public class SparePartServiceImpl implements SparePartService {
 
         SparePart sparePart = sparePartRepository.findById(id).orElseThrow(() -> new CustomException("spare part not found"));
 
-        return modelMapper.map(sparePart, SparePartDTO.class);
+        return toDTO(sparePart);
     }
 
     @Override
@@ -154,5 +188,16 @@ public class SparePartServiceImpl implements SparePartService {
     public boolean ifExit(String id) throws Exception {
 
         return sparePartRepository.existsById(id);
+    }
+
+    private SparePartDTO toDTO(SparePart sparePart) {
+        SparePartDTO dto = modelMapper.map(sparePart, SparePartDTO.class);
+        if (sparePart.getSuppliers() != null) {
+            List<SupplierDTO> supplierDTOs = sparePart.getSuppliers().stream()
+                    .map(s -> modelMapper.map(s, SupplierDTO.class))
+                    .toList();
+            dto.setSuppliers(supplierDTOs);
+        }
+        return dto;
     }
 }

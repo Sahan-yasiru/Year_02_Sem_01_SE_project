@@ -140,6 +140,7 @@ function navigate(page, title) {
                     'customer-returns':       'initCustomerReturnsPage',
                     'customer-transactions':  'initCustomerTransactionsPage',
                     'supplier-transactions':  'initSupplierTransactionsPage',
+                    'purchase-orders':        'initPurchaseOrdersPage',
                 };
                 const fnName = initFnMap[page];
                 if (fnName && typeof window[fnName] === 'function') {

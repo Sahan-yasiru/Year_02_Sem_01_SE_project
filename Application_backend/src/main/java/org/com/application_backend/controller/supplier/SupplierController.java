@@ -2,6 +2,7 @@ package org.com.application_backend.controller.supplier;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.com.application_backend.dto.SparePartDTO;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.service.custom.supplier.SupplierService;
 import org.com.application_backend.util.APIResponse;
@@ -49,5 +50,18 @@ public class SupplierController {
     public ResponseEntity<APIResponse<Void>> deleteSupplier(@PathVariable String id) throws Exception {
         supplierService.delete(id);
         return ResponseEntity.ok(new APIResponse<>(200, "Supplier deleted successfully", null));
+    }
+
+    @GetMapping("/{id}/spare-parts")
+    public ResponseEntity<APIResponse<List<SparePartDTO>>> getSuppliedSpareParts(@PathVariable String id) throws Exception {
+        return ResponseEntity.ok(new APIResponse<>(200, "Supplied spare parts retrieved successfully", supplierService.getSuppliedSpareParts(id)));
+    }
+
+    @PutMapping("/{id}/spare-parts")
+    public ResponseEntity<APIResponse<Void>> updateSuppliedSpareParts(
+            @PathVariable String id,
+            @RequestBody List<String> partIDs) throws Exception {
+        supplierService.updateSuppliedSpareParts(id, partIDs);
+        return ResponseEntity.ok(new APIResponse<>(200, "Supplied spare parts updated successfully", null));
     }
 }

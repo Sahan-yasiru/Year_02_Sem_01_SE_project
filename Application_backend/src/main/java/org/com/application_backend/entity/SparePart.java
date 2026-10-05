@@ -26,7 +26,6 @@ public class SparePart {
             inverseJoinColumns = @JoinColumn(name = "supplier_id")
     )
     private List<Supplier> suppliers;
-;
 
     @ManyToOne
     @JoinColumn(name = "brandID")

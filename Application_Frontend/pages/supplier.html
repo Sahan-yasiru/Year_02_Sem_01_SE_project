@@ -66,7 +66,7 @@
      ADD / EDIT SUPPLIER MODAL
      ═══════════════════════════════════════════════════ -->
 <div id="supplier-modal" class="modal-overlay">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="supp-modal-title">
+    <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="supp-modal-title">
 
         <!-- Header -->
         <div class="modal-header">
@@ -121,6 +121,41 @@
                         <label class="form-label" for="field-supp-phone">Phone Number <span class="required">*</span></label>
                         <input id="field-supp-phone" type="tel" class="form-control" placeholder="0771234567" required/>
                         <div id="err-supp-phone" class="form-error"></div>
+                    </div>
+                </div>
+
+                <!-- Supplied Spare Parts Section -->
+                <div class="form-section-title" style="margin-top:20px;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/>
+                        </svg>
+                        <span>Supplied Spare Parts</span>
+                    </div>
+                    <span id="supp-part-count-badge" style="font-size:11px;font-weight:600;color:var(--color-accent);background:rgba(250,204,21,0.12);padding:2px 8px;border-radius:999px;">0 selected</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                        <input
+                            id="supp-part-search-input"
+                            type="text"
+                            class="form-control"
+                            style="padding:7px 12px;font-size:12.5px;"
+                            placeholder="Search parts by name, ID, brand..."
+                            autocomplete="off"
+                        />
+                        <button type="button" class="btn btn-outline btn-sm" id="btn-select-all-parts" style="font-size:11px;padding:6px 10px;white-space:nowrap;">Select All</button>
+                        <button type="button" class="btn btn-outline btn-sm" id="btn-clear-all-parts" style="font-size:11px;padding:6px 10px;white-space:nowrap;">Clear</button>
+                    </div>
+
+                    <!-- Scrollable Spare Parts List -->
+                    <div id="supp-spare-parts-list" style="max-height:200px;overflow-y:auto;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:rgba(15,23,42,0.4);padding:6px;">
+                        <!-- Rendered by supplier.js -->
+                    </div>
+                    <div style="font-size:11px;color:var(--color-text-muted);margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+                        <span>Select spare parts supplied by this supplier.</span>
+                        <span>Need a part not listed? Add via Spare Parts.</span>
                     </div>
                 </div>
 

@@ -16,7 +16,7 @@
  */
 
 /* ─── Module State ─────────────────────────────────── */
-let spSpareParts   = [];
+let allSpareParts   = [];
 let filteredSP      = [];
 let spSuppliers     = [];   // For the multi-select supplier list
 let spBrands        = [];   // For brand dropdown
@@ -48,6 +48,7 @@ function initSparePartsPage() {
     });
 
     // Close supplier dropdown on outside click
+    document.removeEventListener('click', onDocClickCloseSPDropdown);
     document.addEventListener('click', onDocClickCloseSPDropdown);
 
     // Load all required data in parallel
@@ -63,6 +64,11 @@ async function loadSPPageData() {
             api.get('/brand'),
             api.get('/category'),
         ]);
+        if (!Array.isArray(allSpareParts)) allSpareParts = [];
+        if (!Array.isArray(spSuppliers)) spSuppliers = [];
+        if (!Array.isArray(spBrands)) spBrands = [];
+        if (!Array.isArray(spCategories)) spCategories = [];
+
         filteredSP = [...allSpareParts];
         renderSPTable(filteredSP);
         updateSPCount(filteredSP.length);
@@ -141,10 +147,14 @@ function renderSPTable(parts) {
         } else {
             const visible = suppliers.slice(0, maxShow);
             const extra   = suppliers.length - maxShow;
-            supplierBadges = visible.map(s => `
-                <span class="sp-supplier-chip" title="${escapeHtml(s.supplierID)}">
-                    ${escapeHtml(s.name || s.supplierID)}
-                </span>`).join('');
+            supplierBadges = visible.map(s => {
+                const sid   = s.supplierID || s.SupplierID || '';
+                const sName = s.name || (spSuppliers.find(x => (x.supplierID || x.SupplierID) === sid)?.name) || sid || '—';
+                return `
+                <span class="sp-supplier-chip" title="${escapeHtml(sid)}">
+                    ${escapeHtml(sName)}
+                </span>`;
+            }).join('');
             if (extra > 0) {
                 supplierBadges += `<span class="sp-supplier-chip sp-chip-more">+${extra}</span>`;
             }
@@ -280,10 +290,10 @@ function buildSupplierList(filterText = '') {
     const listEl = document.getElementById('sp-supplier-list');
     if (!listEl) return;
 
-    const q = filterText.toLowerCase();
+    const q = (filterText || '').toLowerCase();
     const filtered = (spSuppliers || []).filter(s => {
         const name = (s.name || '').toLowerCase();
-        const id   = (s.supplierID || '').toLowerCase();
+        const id   = (s.supplierID || s.SupplierID || '').toLowerCase();
         return !q || name.includes(q) || id.includes(q);
     });
 
@@ -293,22 +303,26 @@ function buildSupplierList(filterText = '') {
     }
 
     listEl.innerHTML = filtered.map(s => {
-        const checked = selectedSupplierIDs.has(s.supplierID);
+        const sid = s.supplierID || s.SupplierID || '';
+        const checked = selectedSupplierIDs.has(sid);
         return `
-            <label class="sp-menu-item ${checked ? 'checked' : ''}" data-sid="${escapeHtml(s.supplierID)}">
+            <div class="sp-menu-item ${checked ? 'checked' : ''}" data-sid="${escapeHtml(sid)}">
                 <span class="sp-checkbox ${checked ? 'checked' : ''}">
                     ${checked ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>` : ''}
                 </span>
                 <span class="sp-menu-item-text">
-                    <span class="sp-menu-item-name">${escapeHtml(s.name || s.supplierID)}</span>
-                    <span class="sp-menu-item-id">${escapeHtml(s.supplierID)}</span>
+                    <span class="sp-menu-item-name">${escapeHtml(s.name || sid)}</span>
+                    <span class="sp-menu-item-id">${escapeHtml(sid)}</span>
                 </span>
-            </label>`;
+            </div>`;
     }).join('');
 
     // Attach click listeners
     listEl.querySelectorAll('.sp-menu-item').forEach(item => {
-        item.addEventListener('click', () => toggleSupplier(item.dataset.sid));
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSupplier(item.dataset.sid);
+        });
     });
 }
 
@@ -337,9 +351,12 @@ function updateSelectedTags() {
         return;
     }
 
+    const currentPart = editingPartID ? allSpareParts.find(p => p.partID === editingPartID) : null;
+
     const tags = [...selectedSupplierIDs].map(id => {
-        const sup = spSuppliers.find(s => s.supplierID === id);
-        const label = sup ? sup.name : id;
+        const sup = spSuppliers.find(s => (s.supplierID || s.SupplierID) === id);
+        const partSup = (currentPart?.suppliers || []).find(s => (s.supplierID || s.SupplierID) === id);
+        const label = sup?.name || partSup?.name || id;
         return `
             <span class="sp-tag">
                 ${escapeHtml(label)}
@@ -356,14 +373,17 @@ function updateSelectedTags() {
 function toggleSpSupplierDropdown() {
     const menu = document.getElementById('sp-multiselect-menu');
     const arrow = document.getElementById('sp-dropdown-arrow');
+    const dropdown = document.getElementById('sp-supplier-dropdown');
     if (!menu) return;
     const isOpen = menu.classList.contains('open');
     if (isOpen) {
         menu.classList.remove('open');
+        dropdown?.classList.remove('open');
         arrow?.classList.remove('rotated');
     } else {
-        buildSupplierList();
+        buildSupplierList(document.getElementById('sp-supplier-search')?.value || '');
         menu.classList.add('open');
+        dropdown?.classList.add('open');
         arrow?.classList.add('rotated');
         setTimeout(() => document.getElementById('sp-supplier-search')?.focus(), 50);
     }
@@ -379,6 +399,7 @@ function onDocClickCloseSPDropdown(e) {
         const menu  = document.getElementById('sp-multiselect-menu');
         const arrow = document.getElementById('sp-dropdown-arrow');
         menu?.classList.remove('open');
+        dropdown.classList.remove('open');
         arrow?.classList.remove('rotated');
     }
 }
@@ -412,6 +433,14 @@ function openAddSparePartModal() {
     buildSupplierList();
     openSPModal();
     setTimeout(() => document.getElementById('field-sp-name')?.focus(), 60);
+
+    // Refresh suppliers in background so newly added suppliers appear in dropdown
+    api.get('/supplier').then(fresh => {
+        if (Array.isArray(fresh)) {
+            spSuppliers = fresh;
+            buildSupplierList(document.getElementById('sp-supplier-search')?.value || '');
+        }
+    }).catch(() => {});
 }
 
 function openEditSPModal(id) {
@@ -431,7 +460,7 @@ function openEditSPModal(id) {
     populateCategoryDropdown(p.category?.categoryId || '');
 
     // Pre-select suppliers
-    selectedSupplierIDs = new Set((p.suppliers || []).map(s => s.supplierID));
+    selectedSupplierIDs = new Set((p.suppliers || []).map(s => s.supplierID || s.SupplierID));
     updateSelectedTags();
     buildSupplierList();
 
@@ -443,6 +472,15 @@ function openEditSPModal(id) {
     document.getElementById('sp-submit-text').textContent    = 'Save Changes';
 
     openSPModal();
+
+    // Refresh suppliers in background
+    api.get('/supplier').then(fresh => {
+        if (Array.isArray(fresh)) {
+            spSuppliers = fresh;
+            buildSupplierList(document.getElementById('sp-supplier-search')?.value || '');
+            updateSelectedTags();
+        }
+    }).catch(() => {});
 }
 
 function openSPModal() {
@@ -466,6 +504,7 @@ function closeSPModal() {
     }
     // Close dropdown if open
     document.getElementById('sp-multiselect-menu')?.classList.remove('open');
+    document.getElementById('sp-supplier-dropdown')?.classList.remove('open');
     document.getElementById('sp-dropdown-arrow')?.classList.remove('rotated');
     clearSPForm();
     editingPartID = null;
@@ -483,6 +522,10 @@ function clearSPForm() {
 
     selectedSupplierIDs = new Set();
     updateSelectedTags();
+
+    const searchInput = document.getElementById('sp-supplier-search');
+    if (searchInput) searchInput.value = '';
+    buildSupplierList();
 
     // Clear errors
     document.querySelectorAll('#sp-form .form-control').forEach(el => el.classList.remove('error'));
@@ -600,8 +643,8 @@ function buildSPPayload() {
     const brand    = spBrands.find(b => b.brandID === brandID) || null;
     const category = spCategories.find(c => String(c.categoryId) === String(catID)) || null;
     const suppliers = [...selectedSupplierIDs].map(id => {
-        const s = spSuppliers.find(x => x.supplierID === id);
-        return s ? { supplierID: s.supplierID, name: s.name, phone: s.phone, email: s.email } : { supplierID: id };
+        const s = spSuppliers.find(x => (x.supplierID || x.SupplierID) === id);
+        return s ? { supplierID: s.supplierID || s.SupplierID || id, name: s.name, phone: s.phone, email: s.email } : { supplierID: id };
     });
 
     return {
