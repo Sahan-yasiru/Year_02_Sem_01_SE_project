@@ -1,0 +1,128 @@
+<div class="page-enter dashboard-page">
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-copy">
+            <span class="dashboard-eyebrow">AUTOPARTS OVERVIEW</span>
+            <h1>Good day. Here's your business at a glance.</h1>
+            <p>Live operations, stock health, and order activity — all in one place.</p>
+            <button class="btn dashboard-hero-button" type="button" onclick="navigate('orders','Orders')">
+                View orders
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7-7 7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+        <div class="dashboard-hero-art" aria-hidden="true">
+            <div class="dashboard-orbit dashboard-orbit-one"></div>
+            <div class="dashboard-orbit dashboard-orbit-two"></div>
+            <div class="dashboard-hero-icon">
+                <svg viewBox="0 0 96 96" fill="none">
+                    <path d="M48 11 58 17l12-1 5 11 10 7-2 12 4 11-8 9-3 12-12 2-9 8-11-5-12 1-6-10-11-6 1-12-5-11 7-10 1-12 11-4 8-10Z" stroke="currentColor" stroke-width="3"/>
+                    <circle cx="48" cy="48" r="16" stroke="currentColor" stroke-width="6"/>
+                    <circle cx="48" cy="48" r="5" fill="currentColor"/>
+                </svg>
+            </div>
+        </div>
+        <div class="dashboard-hero-date" id="dashboard-today"></div>
+    </section>
+
+    <div class="dashboard-section-heading">
+        <div>
+            <h2>Business snapshot</h2>
+            <p>Key numbers from your current records</p>
+        </div>
+        <span id="dashboard-refresh-status" class="dashboard-live-label"><i></i> Live data</span>
+    </div>
+
+    <div id="dashboard-load-message" class="dashboard-load-message" role="status" hidden></div>
+
+    <section class="dashboard-metrics" aria-label="Business summary">
+        <article class="dashboard-metric">
+            <div class="dashboard-metric-top"><span class="dashboard-metric-icon metric-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 14l4-4 4 4 6-7"/></svg>
+            </span><span class="dashboard-metric-caption">ALL TIME</span></div>
+            <span id="dashboard-order-value" class="dashboard-metric-value">—</span>
+            <span class="dashboard-metric-label">Order value</span>
+        </article>
+        <article class="dashboard-metric">
+            <div class="dashboard-metric-top"><span class="dashboard-metric-icon metric-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m6-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm10 10v-2a4 4 0 0 0-3-3.87m-1-11.13a4 4 0 0 1 0 7.75"/></svg>
+            </span><span class="dashboard-metric-caption">RELATIONSHIPS</span></div>
+            <span id="dashboard-customer-count" class="dashboard-metric-value">—</span>
+            <span class="dashboard-metric-label">Customers</span>
+        </article>
+        <article class="dashboard-metric">
+            <div class="dashboard-metric-top"><span class="dashboard-metric-icon metric-cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18l-2 13H5L3 7Zm4 0a5 5 0 0 1 10 0"/></svg>
+            </span><span class="dashboard-metric-caption">CATALOG</span></div>
+            <span id="dashboard-part-count" class="dashboard-metric-value">—</span>
+            <span class="dashboard-metric-label">Spare parts</span>
+        </article>
+        <article class="dashboard-metric">
+            <div class="dashboard-metric-top"><span class="dashboard-metric-icon metric-orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9ZM3.5 7.75 12 12l8.5-4.25M12 21v-9"/></svg>
+            </span><span class="dashboard-metric-caption">STOCK CONTROL</span></div>
+            <span id="dashboard-inventory-count" class="dashboard-metric-value">—</span>
+            <span class="dashboard-metric-label">Inventory records</span>
+        </article>
+        <article class="dashboard-metric">
+            <div class="dashboard-metric-top"><span class="dashboard-metric-icon metric-green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+            </span><span class="dashboard-metric-caption">PARTNERS</span></div>
+            <span id="dashboard-supplier-count" class="dashboard-metric-value">—</span>
+            <span class="dashboard-metric-label">Suppliers</span>
+        </article>
+    </section>
+
+    <section class="dashboard-main-grid">
+        <article class="dashboard-panel dashboard-chart-panel">
+            <div class="dashboard-panel-heading">
+                <div><h2>Order activity</h2><p>Orders created over the last 7 days</p></div>
+                <button class="dashboard-text-link" type="button" onclick="navigate('orders','Orders')">All orders <span>→</span></button>
+            </div>
+            <div class="dashboard-chart-summary">
+                <strong id="dashboard-week-orders">—</strong>
+                <span>orders this week</span>
+            </div>
+            <div id="dashboard-orders-chart" class="dashboard-bars" role="img" aria-label="Orders created each day in the last 7 days"></div>
+        </article>
+
+        <article class="dashboard-panel dashboard-stock-panel">
+            <div class="dashboard-panel-heading">
+                <div><h2>Stock watch</h2><p>Items that may need attention</p></div>
+                <button class="dashboard-text-link" type="button" onclick="navigate('inventory','Inventory Management')">Inventory <span>→</span></button>
+            </div>
+            <div class="dashboard-stock-summary">
+                <div><span class="stock-dot stock-dot-danger"></span><span>Out of stock</span><strong id="dashboard-out-count">—</strong></div>
+                <div><span class="stock-dot stock-dot-warning"></span><span>Low stock</span><strong id="dashboard-low-count">—</strong></div>
+            </div>
+            <div id="dashboard-stock-list" class="dashboard-stock-list"></div>
+        </article>
+    </section>
+
+    <section class="dashboard-bottom-grid">
+        <article class="dashboard-panel dashboard-recent-panel">
+            <div class="dashboard-panel-heading">
+                <div><h2>Recent orders</h2><p>Your latest customer activity</p></div>
+                <button class="dashboard-text-link" type="button" onclick="navigate('orders','Orders')">View all <span>→</span></button>
+            </div>
+            <div class="dashboard-table-wrap">
+                <table class="dashboard-table">
+                    <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="dashboard-recent-orders"></tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="dashboard-panel dashboard-shortcuts-panel">
+            <div class="dashboard-panel-heading">
+                <div><h2>Quick access</h2><p>Jump back into your workflow</p></div>
+            </div>
+            <div class="dashboard-shortcuts">
+                <button type="button" onclick="navigate('spare-parts','Spare Parts')"><span class="shortcut-icon shortcut-cyan">＋</span><span><strong>Add a spare part</strong><small>Expand your catalog</small></span><b>→</b></button>
+                <button type="button" onclick="navigate('orders','Orders')"><span class="shortcut-icon shortcut-blue">↗</span><span><strong>Manage orders</strong><small>Review customer orders</small></span><b>→</b></button>
+                <button type="button" onclick="navigate('purchase-orders','Purchase Orders')"><span class="shortcut-icon shortcut-purple">⇧</span><span><strong>Purchase stock</strong><small>Replenish your inventory</small></span><b>→</b></button>
+                <button type="button" onclick="navigate('customers','Customers')"><span class="shortcut-icon shortcut-orange">♧</span><span><strong>View customers</strong><small>Manage relationships</small></span><b>→</b></button>
+            </div>
+        </article>
+    </section>
+</div>
