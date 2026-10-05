@@ -19,7 +19,7 @@
         </button>
     </div>
 
-    <!-- ── Table Card ── -->
+    <!-- ── Spare Parts Card Grid ── -->
     <div class="card">
         <div class="card-header" style="padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:0;">
             <div>
@@ -41,24 +41,8 @@
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Part</th>
-                        <th class="hide-mobile">Category</th>
-                        <th class="hide-mobile">Brand</th>
-                        <th class="hide-mobile">Suppliers</th>
-                        <th class="hide-mobile">Cost Price</th>
-                        <th>Sell Price</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="sp-tbody">
-                    <!-- Populated by spare-parts.js -->
-                </tbody>
-            </table>
+        <div id="sp-card-grid" class="sp-card-grid" aria-live="polite">
+            <!-- Populated by spare-parts.js -->
         </div>
     </div>
 
@@ -113,11 +97,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="field-sp-image">Part Image</label>
+                    <label class="form-label" for="field-sp-image">Part Image <span style="font-weight:400;color:var(--color-text-muted);">(max 60 KB)</span></label>
                     <input id="field-sp-image" type="file" class="form-control" accept="image/*"/>
                     <div style="margin-top:10px;">
                         <img id="sp-image-preview" alt="Spare part preview" style="display:none;width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--color-border);"/>
-                        <span id="sp-image-placeholder" style="font-size:12px;color:var(--color-text-muted);">No image selected</span>
+                        <span id="sp-image-placeholder" style="font-size:12px;color:var(--color-text-muted);">No image selected. Image size must be 60 KB or less.</span>
                     </div>
                 </div>
 

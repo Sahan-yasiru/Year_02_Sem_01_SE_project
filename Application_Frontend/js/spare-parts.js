@@ -72,7 +72,7 @@ async function loadSPPageData() {
         if (!Array.isArray(spCategories)) spCategories = [];
 
         filteredSP = [...allSpareParts];
-        renderSPTable(filteredSP);
+        renderSPCards(filteredSP);
         updateSPCount(filteredSP.length);
     } catch (err) {
         showSPTableError(err.message);
@@ -96,13 +96,76 @@ function onSPSearch(e) {
             return id.includes(q) || name.includes(q) || brand.includes(q) || cat.includes(q) || sups.includes(q);
         });
     }
-    renderSPTable(filteredSP);
+    renderSPCards(filteredSP);
     updateSPCount(filteredSP.length);
 }
 
 function updateSPCount(n) {
     const el = document.getElementById('sp-count');
     if (el) el.textContent = `${n} part${n !== 1 ? 's' : ''}`;
+}
+
+function renderSPCards(parts) {
+    const grid = document.getElementById('sp-card-grid');
+    if (!grid) return;
+
+    if (!parts || parts.length === 0) {
+        grid.innerHTML = `
+            <div class="sp-card-empty">
+                <div class="empty-state">
+                    <div class="empty-state-title">${allSpareParts.length === 0 ? 'No spare parts yet' : 'No matching parts'}</div>
+                    <div class="empty-state-msg">${allSpareParts.length === 0 ? 'Click "Add Spare Part" to create your first catalog entry.' : 'Try adjusting your search.'}</div>
+                </div>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = parts.map(part => {
+        const id = part.partID || '—';
+        const name = part.partName || 'Unnamed Part';
+        const imageSrc = getSPImageSrc(part.image);
+        const image = imageSrc
+            ? `<img class="sp-card-image" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(name)}" loading="lazy">`
+            : `<div class="sp-card-image-placeholder" style="--sp-avatar-color:${avatarColor(id)}">${escapeHtml(name.substring(0, 2).toUpperCase())}</div>`;
+        const partSuppliers = part.suppliers || [];
+        let suppliers = partSuppliers.slice(0, 3).map(supplier => {
+            const supplierID = supplier.supplierID || supplier.SupplierID || '';
+            const supplierName = supplier.name
+                || spSuppliers.find(item => (item.supplierID || item.SupplierID) === supplierID)?.name
+                || supplierID
+                || '—';
+            return `<span class="sp-supplier-chip" title="${escapeHtml(supplierID)}">${escapeHtml(supplierName)}</span>`;
+        }).join('');
+        if (partSuppliers.length > 3) suppliers += `<span class="sp-supplier-chip sp-chip-more">+${partSuppliers.length - 3}</span>`;
+        if (!suppliers) suppliers = '<span class="sp-card-no-suppliers">—</span>';
+
+        return `
+            <article class="sp-part-card">
+                <div class="sp-card-media">${image}</div>
+                <div class="sp-card-content">
+                    <div class="sp-card-heading">
+                        <div>
+                            <h3 class="sp-card-title">${escapeHtml(name)}</h3>
+                            <span class="sp-card-id">${escapeHtml(id)}</span>
+                        </div>
+                        <span class="sp-card-category">${escapeHtml(part.category?.categoryName || '—')}</span>
+                    </div>
+                    <div class="sp-card-brand"><span>Brand</span><strong>${escapeHtml(part.brand?.brandName || '—')}</strong></div>
+                    <div class="sp-card-prices">
+                        <div><span>Cost price</span><strong>Rs. ${Number(part.costPrice || 0).toFixed(2)}</strong></div>
+                        <div><span>Sell price</span><strong class="sp-card-sell-price">Rs. ${Number(part.sellPrice || 0).toFixed(2)}</strong></div>
+                    </div>
+                    <div class="sp-card-suppliers">
+                        <span class="sp-card-label">Suppliers</span>
+                        <div class="sp-card-supplier-list">${suppliers}</div>
+                    </div>
+                    <div class="sp-card-actions">
+                        <button class="btn btn-outline btn-sm" type="button" title="Edit Part" onclick="openEditSPModal('${escapeHtml(id)}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" type="button" title="Delete Part" onclick="openSPDeleteConfirm('${escapeHtml(id)}', '${escapeHtml(name)}')">Delete</button>
+                    </div>
+                </div>
+            </article>`;
+    }).join('');
 }
 
 /* =====================================================
@@ -215,33 +278,31 @@ function renderSPTable(parts) {
 }
 
 function showSPSkeleton() {
-    const tbody = document.getElementById('sp-tbody');
-    if (!tbody) return;
-    tbody.innerHTML = Array(5).fill(0).map(() => `
-        <tr>
-            <td><div class="skeleton" style="height:36px;width:200px"></div></td>
-            <td class="hide-mobile"><div class="skeleton" style="height:20px;width:100px"></div></td>
-            <td class="hide-mobile"><div class="skeleton" style="height:14px;width:100px"></div></td>
-            <td class="hide-mobile"><div class="skeleton" style="height:20px;width:140px"></div></td>
-            <td class="hide-mobile"><div class="skeleton" style="height:14px;width:70px"></div></td>
-            <td><div class="skeleton" style="height:14px;width:70px"></div></td>
-            <td><div class="skeleton" style="height:30px;width:66px"></div></td>
-        </tr>`).join('');
+    const grid = document.getElementById('sp-card-grid');
+    if (!grid) return;
+    grid.innerHTML = Array(6).fill(0).map(() => `
+        <div class="sp-part-card sp-card-skeleton">
+            <div class="skeleton sp-card-skeleton-image"></div>
+            <div class="sp-card-content">
+                <div class="skeleton" style="height:18px;width:65%;margin-bottom:10px"></div>
+                <div class="skeleton" style="height:14px;width:40%;margin-bottom:22px"></div>
+                <div class="skeleton" style="height:14px;width:85%;margin-bottom:14px"></div>
+                <div class="skeleton" style="height:14px;width:70%"></div>
+            </div>
+        </div>`).join('');
 }
 
 function showSPTableError(msg) {
-    const tbody = document.getElementById('sp-tbody');
-    if (!tbody) return;
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="7" class="empty-table-cell">
-                <div class="empty-state">
-                    <div class="empty-state-title" style="color:var(--color-danger)">Failed to load spare parts</div>
-                    <div class="empty-state-msg">${escapeHtml(msg)}</div>
-                    <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="loadSPPageData()">Try Again</button>
-                </div>
-            </td>
-        </tr>`;
+    const grid = document.getElementById('sp-card-grid');
+    if (!grid) return;
+    grid.innerHTML = `
+        <div class="sp-card-empty">
+            <div class="empty-state">
+                <div class="empty-state-title" style="color:var(--color-danger)">Failed to load spare parts</div>
+                <div class="empty-state-msg">${escapeHtml(msg)}</div>
+                <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="loadSPPageData()">Try Again</button>
+            </div>
+        </div>`;
 }
 
 /* =====================================================
@@ -568,6 +629,11 @@ function onSPImageSelected(event) {
         showToast('Invalid image', 'Choose an image file to upload.', 'error');
         return;
     }
+    if (file.size > 60 * 1024) {
+        input.value = '';
+        showToast('Image too large', 'Choose an image that is 60 KB or smaller.', 'error');
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -614,7 +680,7 @@ async function confirmDeleteSP() {
         await api.delete('/spare-part/' + spToDelete);
         allSpareParts = allSpareParts.filter(p => p.partID !== spToDelete);
         filteredSP    = filteredSP.filter(p => p.partID !== spToDelete);
-        renderSPTable(filteredSP);
+        renderSPCards(filteredSP);
         updateSPCount(filteredSP.length);
         closeSPDeleteConfirm();
         showToast('Part deleted', 'The spare part has been removed.', 'success');
@@ -711,6 +777,11 @@ function buildSPPayload() {
 async function onSPFormSubmit(e) {
     e.preventDefault();
     if (!validateSPForm()) return;
+    const image = document.getElementById('field-sp-image')?.files?.[0];
+    if (image && image.size > 60 * 1024) {
+        showToast('Image too large', 'Choose an image that is 60 KB or smaller.', 'error');
+        return;
+    }
 
     const btn = document.getElementById('sp-save-btn');
     setButtonLoading(btn, true, editingPartID ? 'Saving...' : 'Adding...');
@@ -718,7 +789,6 @@ async function onSPFormSubmit(e) {
     const payload = buildSPPayload();
     const formData = new FormData();
     formData.append('sparePart', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
-    const image = document.getElementById('field-sp-image')?.files?.[0];
     if (image) formData.append('img', image);
 
     try {
@@ -733,7 +803,7 @@ async function onSPFormSubmit(e) {
             allSpareParts.unshift(created);
         }
         filteredSP = [...allSpareParts];
-        renderSPTable(filteredSP);
+        renderSPCards(filteredSP);
         updateSPCount(filteredSP.length);
         closeSPModal();
         showToast(
