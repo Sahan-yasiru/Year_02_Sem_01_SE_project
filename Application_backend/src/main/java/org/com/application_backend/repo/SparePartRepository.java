@@ -1,6 +1,6 @@
 package org.com.application_backend.repo;
 
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.com.application_backend.entity.Supplier.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -3,7 +3,7 @@ package org.com.application_backend.entity.purchase;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 
 import java.util.Date;
 

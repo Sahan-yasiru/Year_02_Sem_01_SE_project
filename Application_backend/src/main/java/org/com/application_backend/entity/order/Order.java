@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.com.application_backend.entity.Customer.Customer;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

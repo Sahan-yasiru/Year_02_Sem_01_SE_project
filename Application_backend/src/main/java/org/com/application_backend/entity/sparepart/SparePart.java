@@ -1,7 +1,9 @@
-package org.com.application_backend.entity;
+package org.com.application_backend.entity.sparepart;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.com.application_backend.entity.Brand;
+import org.com.application_backend.entity.Category;
 import org.com.application_backend.entity.Supplier.Supplier;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -17,6 +19,11 @@ public class SparePart {
 
     @Id
     private String partID;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Img image;
 
 
     @ManyToMany

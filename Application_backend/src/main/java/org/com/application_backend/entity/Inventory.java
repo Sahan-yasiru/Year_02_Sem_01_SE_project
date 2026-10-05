@@ -2,9 +2,9 @@ package org.com.application_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.engine.internal.Cascade;
 
 @AllArgsConstructor
 @NoArgsConstructor

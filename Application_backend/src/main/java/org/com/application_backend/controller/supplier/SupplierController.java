@@ -2,7 +2,7 @@ package org.com.application_backend.controller.supplier;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.com.application_backend.dto.SparePartDTO;
+import org.com.application_backend.dto.SparePart.SparePartDTO;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.service.custom.supplier.SupplierService;
 import org.com.application_backend.util.APIResponse;

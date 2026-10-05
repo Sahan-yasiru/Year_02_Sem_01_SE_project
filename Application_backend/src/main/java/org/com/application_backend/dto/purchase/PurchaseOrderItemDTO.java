@@ -3,7 +3,7 @@ package org.com.application_backend.dto.purchase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.com.application_backend.dto.SparePartDTO;
+import org.com.application_backend.dto.SparePart.SparePartDTO;
 
 @AllArgsConstructor
 @NoArgsConstructor

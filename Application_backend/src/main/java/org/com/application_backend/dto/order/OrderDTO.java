@@ -5,9 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.com.application_backend.dto.Customer.CustomerDTO;
-import org.com.application_backend.dto.SparePartDTO;
-import org.com.application_backend.entity.Customer.Customer;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.dto.SparePart.SparePartDTO;
 import org.com.application_backend.entity.order.OrderStatus;
 
 import java.util.Date;

@@ -6,6 +6,7 @@
  * SparePartDTO:
  * {
  *   partID:      string       (e.g. "SP001")
+ *   image:       DtoImg       { imgName, imgType, imgData }
  *   partName:    string
  *   suppliers:   SupplierDTO[]
  *   brand:       BrandDTO     { brandID, brandName, countryOfOrigin }
@@ -32,6 +33,7 @@ function initSparePartsPage() {
     document.getElementById('btn-add-sp')?.addEventListener('click', openAddSparePartModal);
     document.getElementById('sp-search-input')?.addEventListener('input', onSPSearch);
     document.getElementById('sp-form')?.addEventListener('submit', onSPFormSubmit);
+    document.getElementById('field-sp-image')?.addEventListener('change', onSPImageSelected);
     document.getElementById('sp-cancel-btn')?.addEventListener('click', closeSPModal);
     document.getElementById('sp-modal-close-btn')?.addEventListener('click', closeSPModal);
     document.getElementById('sp-confirm-cancel-btn')?.addEventListener('click', closeSPDeleteConfirm);
@@ -138,6 +140,10 @@ function renderSPTable(parts) {
         const suppliers = p.suppliers || [];
         const initials  = name.substring(0, 2).toUpperCase();
         const color     = avatarColor(id);
+        const imageSrc  = getSPImageSrc(p.image);
+        const avatar    = imageSrc
+            ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(name)}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">`
+            : escapeHtml(initials);
 
         // Build supplier badges (up to 3 shown, then +N)
         const maxShow = 3;
@@ -164,7 +170,7 @@ function renderSPTable(parts) {
             <tr>
                 <td>
                     <div class="avatar-cell">
-                        <div class="avatar" style="background:${color};font-size:11px;">${escapeHtml(initials)}</div>
+                        <div class="avatar" style="background:${color};font-size:11px;">${avatar}</div>
                         <div class="avatar-info">
                             <span class="user-name">${escapeHtml(name)}</span>
                             <span class="user-id">${escapeHtml(id)}</span>
@@ -455,6 +461,7 @@ function openEditSPModal(id) {
     document.getElementById('field-sp-name').value     = p.partName || '';
     document.getElementById('field-sp-cost').value     = p.costPrice ?? '';
     document.getElementById('field-sp-sell').value     = p.sellPrice ?? '';
+    renderSPImagePreview(getSPImageSrc(p.image));
 
     populateBrandDropdown(p.brand?.brandID || '');
     populateCategoryDropdown(p.category?.categoryId || '');
@@ -519,6 +526,9 @@ function clearSPForm() {
     const catSel   = document.getElementById('field-sp-category');
     if (brandSel) brandSel.selectedIndex = 0;
     if (catSel)   catSel.selectedIndex   = 0;
+    const imageInput = document.getElementById('field-sp-image');
+    if (imageInput) imageInput.value = '';
+    renderSPImagePreview('');
 
     selectedSupplierIDs = new Set();
     updateSelectedTags();
@@ -530,6 +540,43 @@ function clearSPForm() {
     // Clear errors
     document.querySelectorAll('#sp-form .form-control').forEach(el => el.classList.remove('error'));
     document.querySelectorAll('#sp-form .form-error').forEach(el => { el.classList.remove('show'); el.textContent = ''; });
+}
+
+function getSPImageSrc(image) {
+    const mimeType = image?.imgType;
+    const data = image?.imgData;
+    if (typeof mimeType !== 'string' || !/^image\/(png|jpe?g|gif|webp|bmp|avif)$/i.test(mimeType)) return '';
+    if (typeof data !== 'string' || !data) return '';
+    return `data:${mimeType};base64,${data}`;
+}
+
+function renderSPImagePreview(src) {
+    const preview = document.getElementById('sp-image-preview');
+    const placeholder = document.getElementById('sp-image-placeholder');
+    if (!preview || !placeholder) return;
+    preview.src = src;
+    preview.style.display = src ? 'block' : 'none';
+    placeholder.style.display = src ? 'none' : 'block';
+}
+
+function onSPImageSelected(event) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        input.value = '';
+        showToast('Invalid image', 'Choose an image file to upload.', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        if (input.files?.[0] === file && typeof reader.result === 'string') {
+            renderSPImagePreview(reader.result);
+        }
+    };
+    reader.onerror = () => showToast('Image preview failed', 'The selected image could not be read.', 'error');
+    reader.readAsDataURL(file);
 }
 
 /* =====================================================
@@ -669,16 +716,20 @@ async function onSPFormSubmit(e) {
     setButtonLoading(btn, true, editingPartID ? 'Saving...' : 'Adding...');
 
     const payload = buildSPPayload();
+    const formData = new FormData();
+    formData.append('sparePart', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    const image = document.getElementById('field-sp-image')?.files?.[0];
+    if (image) formData.append('img', image);
 
     try {
         if (editingPartID) {
-            const updated = await api.put('/spare-part', payload);
+            const updated = await api.putMultipart('/spare-part', formData);
             const idx = allSpareParts.findIndex(p => p.partID === editingPartID);
             if (idx !== -1) allSpareParts[idx] = updated;
         } else {
             const createWithInventory = document.getElementById('field-sp-create-inventory')?.checked ?? true;
             const endpoint = createWithInventory ? '/spare-part' : '/spare-part/without-inventory';
-            const created = await api.post(endpoint, payload);
+            const created = await api.postMultipart(endpoint, formData);
             allSpareParts.unshift(created);
         }
         filteredSP = [...allSpareParts];

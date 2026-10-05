@@ -3,7 +3,7 @@ package org.com.application_backend.service.impl;
 import lombok.AllArgsConstructor;
 import org.com.application_backend.dto.InventoryDTO;
 import org.com.application_backend.entity.Inventory;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.com.application_backend.exception.CustomException;
 import org.com.application_backend.repo.InventoryRepository;
 import org.com.application_backend.repo.SparePartRepository;

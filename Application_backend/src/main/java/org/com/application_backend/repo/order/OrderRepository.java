@@ -1,7 +1,7 @@
 package org.com.application_backend.repo.order;
 
 import org.com.application_backend.entity.Customer.Customer;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.com.application_backend.entity.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

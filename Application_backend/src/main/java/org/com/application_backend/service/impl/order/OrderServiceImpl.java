@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.com.application_backend.dto.order.OrderDTO;
 import org.com.application_backend.entity.Customer.Customer;
 import org.com.application_backend.entity.Inventory;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.com.application_backend.entity.order.Order;
 import org.com.application_backend.entity.order.OrderStatus;
 import org.com.application_backend.exception.CustomException;

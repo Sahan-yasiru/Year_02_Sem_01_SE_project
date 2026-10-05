@@ -1,14 +1,12 @@
-package org.com.application_backend.dto;
+package org.com.application_backend.dto.SparePart;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.com.application_backend.dto.BrandDTO;
+import org.com.application_backend.dto.CategoryDTO;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
-import org.com.application_backend.entity.Brand;
-import org.com.application_backend.entity.Inventory;
-import org.com.application_backend.entity.Supplier.Supplier;
-import org.com.application_backend.entity.Category;
 
 import java.util.List;
 
@@ -18,6 +16,7 @@ import java.util.List;
 @ToString
 public class SparePartDTO {
     private String partID;
+    private DtoImg image;
     private String partName;
     private List<SupplierDTO> suppliers;
     private BrandDTO brand;

@@ -2,7 +2,7 @@ package org.com.application_backend.repo;
 
 import org.com.application_backend.entity.Inventory;
 import jakarta.persistence.LockModeType;
-import org.com.application_backend.entity.SparePart;
+import org.com.application_backend.entity.sparepart.SparePart;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;

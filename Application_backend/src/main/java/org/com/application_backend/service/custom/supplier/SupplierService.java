@@ -1,6 +1,6 @@
 package org.com.application_backend.service.custom.supplier;
 
-import org.com.application_backend.dto.SparePartDTO;
+import org.com.application_backend.dto.SparePart.SparePartDTO;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
 import org.com.application_backend.service.SuperService;
 

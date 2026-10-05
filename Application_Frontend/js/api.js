@@ -38,6 +38,15 @@ function extractData(body) {
     return body;
 }
 
+async function sendMultipart(method, endpoint, formData) {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+        method,
+        body: formData
+    });
+    const body = await handleResponse(res);
+    return extractData(body);
+}
+
 const api = {
     /**
      * GET request
@@ -83,6 +92,14 @@ const api = {
         });
         const body = await handleResponse(res);
         return extractData(body);
+    },
+
+    postMultipart: async function (endpoint, formData) {
+        return sendMultipart('POST', endpoint, formData);
+    },
+
+    putMultipart: async function (endpoint, formData) {
+        return sendMultipart('PUT', endpoint, formData);
     },
 
     /**
