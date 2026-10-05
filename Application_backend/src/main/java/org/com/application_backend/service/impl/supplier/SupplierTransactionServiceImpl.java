@@ -63,8 +63,8 @@ public class SupplierTransactionServiceImpl implements SupplierTransactionServic
     public boolean ifExit(String id) throws Exception {
         return supplierTransactionRepository.existsById(parseId(id));
     }
-
-    private Long parseId(String id) throws CustomException {
+    @Override
+    public Long parseId(String id) throws CustomException {
         try {
             return Long.parseLong(id);
         } catch (NumberFormatException e) {

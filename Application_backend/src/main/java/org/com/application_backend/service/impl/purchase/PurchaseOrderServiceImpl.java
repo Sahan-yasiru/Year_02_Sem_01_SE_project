@@ -3,10 +3,12 @@ package org.com.application_backend.service.impl.purchase;
 import lombok.AllArgsConstructor;
 import org.com.application_backend.dto.SparePart.SparePartDTO;
 import org.com.application_backend.dto.Supplier.SupplierDTO;
+import org.com.application_backend.dto.Supplier.SupplierTransactionDTO;
 import org.com.application_backend.dto.purchase.PurchaseOrderDTO;
 import org.com.application_backend.dto.purchase.PurchaseOrderItemDTO;
 import org.com.application_backend.dto.purchase.ReceiveItemDTO;
 import org.com.application_backend.entity.Inventory;
+import org.com.application_backend.entity.Supplier.SupplierTransaction;
 import org.com.application_backend.entity.sparepart.SparePart;
 import org.com.application_backend.entity.Supplier.Supplier;
 import org.com.application_backend.entity.purchase.PurchaseOrder;
@@ -17,9 +19,11 @@ import org.com.application_backend.exception.CustomException;
 import org.com.application_backend.repo.InventoryRepository;
 import org.com.application_backend.repo.SparePartRepository;
 import org.com.application_backend.repo.Supplier.SupplierRepository;
+import org.com.application_backend.repo.Supplier.SupplierTransactionRepository;
 import org.com.application_backend.repo.purchase.PurchaseOrderItemRepository;
 import org.com.application_backend.repo.purchase.PurchaseOrderRepository;
 import org.com.application_backend.service.custom.purchase.PurchaseOrderService;
+import org.com.application_backend.service.custom.supplier.SupplierTransactionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,8 @@ import java.util.List;
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     private final PurchaseOrderRepository purchaseOrderRepository;
+    private final SupplierTransactionRepository supplierTransactionRepository;
+    private final SupplierTransactionService supplierTransactionService;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final SupplierRepository supplierRepository;
     private final SparePartRepository sparePartRepository;
@@ -258,12 +264,21 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     @Override
     @Transactional
     public PurchaseOrderDTO updatePaymentStatus(String poId, PurchaseOrderPaymentStatus paymentStatus) throws Exception {
+        System.out.println("word");
         PurchaseOrder po = purchaseOrderRepository.findById(poId)
                 .orElseThrow(() -> new CustomException("Purchase Order not found: " + poId));
 
         po.setPaymentStatus(paymentStatus);
         PurchaseOrder saved = purchaseOrderRepository.save(po);
+        setSupTrs(saved);
         return toDTO(saved);
+    }
+
+    public void  setSupTrs(PurchaseOrder PO){
+
+        supplierTransactionRepository.save(new SupplierTransaction(null,PO.getSupplier(),new Date(),PO.getTotalAmount(),
+                PO.getItems().stream().map(PurchaseOrderItem::getSparePart).toList()));
+
     }
 
     @Override

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.com.application_backend.entity.sparepart.SparePart;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +27,7 @@ public class SupplierTransaction {
     private Date date;
     private double price;
 
-    @OneToOne
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "sparePartID")
-    private SparePart sparePart;
+    private List<SparePart> spareParts;
 }
