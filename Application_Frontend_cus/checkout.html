@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,9 @@
 
   <div class="container">
 
+    <!-- PAGE HEADER -->
     <div class="section-header">
+
       <div>
         <span class="section-label">
           CHECKOUT
@@ -37,12 +40,14 @@
         <i class="fa-solid fa-arrow-left"></i>
         Back to Cart
       </a>
+
     </div>
 
 
     <div class="checkout-layout">
 
-      <!-- CUSTOMER DETAILS -->
+      <!-- ================= DELIVERY DETAILS ================= -->
+
       <div class="checkout-card">
 
         <h3>Delivery Details</h3>
@@ -50,6 +55,7 @@
         <form id="checkoutForm">
 
           <div class="checkout-form-group">
+
             <label for="customerName">
               Full Name
             </label>
@@ -59,10 +65,12 @@
               id="customerName"
               required
             >
+
           </div>
 
 
           <div class="checkout-form-group">
+
             <label for="customerPhone">
               Phone Number
             </label>
@@ -72,10 +80,12 @@
               id="customerPhone"
               required
             >
+
           </div>
 
 
           <div class="checkout-form-group">
+
             <label for="customerEmail">
               Email
             </label>
@@ -85,10 +95,12 @@
               id="customerEmail"
               required
             >
+
           </div>
 
 
           <div class="checkout-form-group">
+
             <label for="deliveryAddress">
               Delivery Address
             </label>
@@ -98,6 +110,7 @@
               rows="4"
               required
             ></textarea>
+
           </div>
 
         </form>
@@ -105,25 +118,31 @@
       </div>
 
 
-      <!-- ORDER SUMMARY -->
+      <!-- ================= ORDER SUMMARY ================= -->
+
       <div class="checkout-card">
 
         <h3>Order Summary</h3>
 
         <div id="checkoutItems"></div>
 
+
         <div class="checkout-total-row">
+
           <span>Total</span>
 
           <strong id="checkoutTotal">
             Rs. 0.00
           </strong>
+
         </div>
+
 
         <button
           type="submit"
           form="checkoutForm"
           class="checkout-btn"
+          id="placeOrderButton"
         >
           Place Order
         </button>
@@ -137,226 +156,502 @@
 </section>
 
 
+<!-- CART FUNCTIONS -->
 <script src="js/customer-cart.js"></script>
 
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
 
-    const loggedUser = JSON.parse(
-      localStorage.getItem("loggedUser")
-    );
+  // =========================================================
+  // PAGE LOAD
+  // =========================================================
 
-    if (!loggedUser) {
-      window.location.href = "login.html";
-      return;
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      let loggedUser = null;
+
+      try {
+
+        loggedUser = JSON.parse(
+          localStorage.getItem("loggedUser")
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Invalid logged user:",
+          error
+        );
+
+      }
+
+
+      // Customer must be logged in
+      if (!loggedUser) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+
+      }
+
+
+      // Fill customer details
+      document
+        .getElementById("customerName")
+        .value =
+        loggedUser.username || "";
+
+
+      document
+        .getElementById("customerEmail")
+        .value =
+        loggedUser.email || "";
+
+
+      document
+        .getElementById("customerPhone")
+        .value =
+        loggedUser.phoneNumber ||
+        loggedUser.phone ||
+        "";
+
+
+      renderCheckoutSummary();
+
     }
+  );
 
-    document.getElementById("customerName").value =
-      loggedUser.username || "";
 
-    document.getElementById("customerEmail").value =
-      loggedUser.email || "";
-
-    document.getElementById("customerPhone").value =
-      loggedUser.phone || "";
-
-    renderCheckoutSummary();
-  });
-
+  // =========================================================
+  // RENDER ORDER SUMMARY
+  // =========================================================
 
   function renderCheckoutSummary() {
 
     const checkoutItems =
-      document.getElementById("checkoutItems");
+      document.getElementById(
+        "checkoutItems"
+      );
+
 
     const checkoutTotal =
-      document.getElementById("checkoutTotal");
+      document.getElementById(
+        "checkoutTotal"
+      );
+
 
     const cart = getCart();
 
-    if (cart.length === 0) {
-      checkoutItems.innerHTML =
-        "<p>Your cart is empty.</p>";
+
+    if (!cart || cart.length === 0) {
+
+      checkoutItems.innerHTML = `
+        <p>Your cart is empty.</p>
+      `;
 
       checkoutTotal.textContent =
         "Rs. 0.00";
 
       return;
+
     }
 
-    checkoutItems.innerHTML =
-      cart.map(item => `
-        <div class="checkout-item">
-          <span>
-            ${item.partName}
-            × ${item.quantity}
-          </span>
 
-          <strong>
-            Rs. ${
-        Number(
-          item.price * item.quantity
-        ).toLocaleString("en-LK")
-      }
-          </strong>
-        </div>
-      `).join("");
+    checkoutItems.innerHTML =
+      cart.map(item => {
+
+        const quantity =
+          Number(item.quantity || 0);
+
+        const price =
+          Number(item.price || 0);
+
+        const lineTotal =
+          price * quantity;
+
+
+        return `
+          <div class="checkout-item">
+
+            <span>
+              ${item.partName}
+              × ${quantity}
+            </span>
+
+            <strong>
+              Rs. ${lineTotal.toLocaleString("en-LK")}
+            </strong>
+
+          </div>
+        `;
+
+      }).join("");
+
 
     checkoutTotal.textContent =
       `Rs. ${getCartTotal().toLocaleString("en-LK")}`;
+
   }
 
 
+  // =========================================================
+  // PLACE ORDER
+  // =========================================================
+
   document
     .getElementById("checkoutForm")
-    .addEventListener("submit", async function (event) {
+    .addEventListener(
+      "submit",
+      async function (event) {
 
-      event.preventDefault();
-
-      const loggedUser = JSON.parse(
-        localStorage.getItem("loggedUser")
-      );
-
-      const cart = getCart();
-
-      if (!loggedUser) {
-        alert("Please login before placing an order.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
-
-      const customerName =
-        document.getElementById("customerName").value.trim();
-
-      const customerPhone =
-        document.getElementById("customerPhone").value.trim();
-
-      const customerEmail =
-        document.getElementById("customerEmail").value.trim();
-
-      const deliveryAddress =
-        document.getElementById("deliveryAddress").value.trim();
-
-      if (
-        !customerName ||
-        !customerPhone ||
-        !customerEmail ||
-        !deliveryAddress
-      ) {
-        alert("Please complete all delivery details.");
-        return;
-      }
+        event.preventDefault();
 
 
-      // Expand cart quantities into spare-parts list
-      const spareParts = [];
+        const loggedUser =
+          JSON.parse(
+            localStorage.getItem(
+              "loggedUser"
+            )
+          );
 
-      cart.forEach(item => {
 
-        for (let i = 0; i < item.quantity; i++) {
+        const cart =
+          getCart();
 
-          spareParts.push({
-            partID: item.partId
-          });
+
+        // -------------------------
+        // VALIDATION
+        // -------------------------
+
+        if (!loggedUser) {
+
+          alert(
+            "Please login before placing an order."
+          );
+
+          window.location.href =
+            "login.html";
+
+          return;
 
         }
 
-      });
 
-
-      const totalQuantity = cart.reduce(
-        (sum, item) =>
-          sum + Number(item.quantity),
-        0
-      );
-
-
-      const orderData = {
-
-        customer: {
-          userID: loggedUser.userID
-        },
-
-        spareParts: spareParts,
-
-        quantity: totalQuantity,
-
-        address: deliveryAddress
-
-      };
-
-
-      console.log(
-        "ORDER REQUEST:",
-        orderData
-      );
-
-
-      try {
-
-        const response = await fetch(
-          "http://localhost:8080/api/orders",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(orderData)
-          }
-        );
-
-
-        const result = await response.json();
-
-        console.log(
-          "ORDER RESPONSE:",
-          result
-        );
-
-
-        if (!response.ok) {
+        if (!cart || cart.length === 0) {
 
           alert(
-            result?.message ||
-            "Unable to place order."
+            "Your cart is empty."
           );
 
           return;
+
         }
 
 
-        alert("Order placed successfully!");
+        const customerName =
+          document
+            .getElementById(
+              "customerName"
+            )
+            .value
+            .trim();
 
 
-        // Clear cart only after successful order
-        localStorage.removeItem("customerCart");
+        const customerPhone =
+          document
+            .getElementById(
+              "customerPhone"
+            )
+            .value
+            .trim();
 
 
-        window.location.href =
-          "index.html";
+        const customerEmail =
+          document
+            .getElementById(
+              "customerEmail"
+            )
+            .value
+            .trim();
 
-      } catch (error) {
 
-        console.error(
-          "Place order error:",
-          error
-        );
+        const deliveryAddress =
+          document
+            .getElementById(
+              "deliveryAddress"
+            )
+            .value
+            .trim();
 
-        alert(
-          "Could not connect to the server."
-        );
+
+        if (
+          !customerName ||
+          !customerPhone ||
+          !customerEmail ||
+          !deliveryAddress
+        ) {
+
+          alert(
+            "Please complete all delivery details."
+          );
+
+          return;
+
+        }
+
+
+        // =====================================================
+        // CREATE SPARE PART LIST
+        // =====================================================
+
+        const spareParts = [];
+
+
+        cart.forEach(item => {
+
+          const quantity =
+            Number(
+              item.quantity || 0
+            );
+
+
+          for (
+            let i = 0;
+            i < quantity;
+            i++
+          ) {
+
+            spareParts.push({
+
+              partID:
+                String(
+                  item.partId || ""
+                ),
+
+              partName:
+                String(
+                  item.partName || ""
+                ),
+
+              costPrice:
+                0.0,
+
+              sellPrice:
+                Number(
+                  item.price || 0
+                ),
+
+              suppliers:
+                [],
+
+              brand:
+                null,
+
+              category:
+                null
+
+            });
+
+          }
+
+        });
+
+
+        // =====================================================
+        // TOTAL QUANTITY
+        // =====================================================
+
+        const totalQuantity =
+          cart.reduce(
+            (sum, item) => {
+
+              return (
+                sum +
+                Number(
+                  item.quantity || 0
+                )
+              );
+
+            },
+            0
+          );
+
+
+        // =====================================================
+        // ORDER REQUEST BODY
+        // =====================================================
+
+        const orderId =
+          "ORD" + Date.now();
+
+        const orderData = {
+
+          orderId: orderId,
+
+          customer: {
+            customerID: loggedUser.customerID || "",
+            userID: Number(loggedUser.userID),
+            username: loggedUser.username || "",
+            email: customerEmail,
+            phoneNumber: Number(customerPhone)
+          },
+
+          spareParts: spareParts,
+
+          quantity: totalQuantity,
+
+          totalPrice: Number(getCartTotal()),
+
+          address: deliveryAddress
+
+        };
+
+
+        // =====================================================
+        // SEND ORDER TO BACKEND
+        // =====================================================
+
+        const placeOrderButton =
+          document.getElementById(
+            "placeOrderButton"
+          );
+
+
+        try {
+
+          placeOrderButton.disabled =
+            true;
+
+          placeOrderButton.textContent =
+            "Placing Order...";
+
+
+          const response =
+            await fetch(
+              "http://localhost:8080/api/orders",
+              {
+
+                method:
+                  "POST",
+
+                headers: {
+
+                  "Content-Type":
+                    "application/json"
+
+                },
+
+                body:
+                  JSON.stringify(
+                    orderData
+                  )
+
+              }
+            );
+
+
+          let result = null;
+
+
+          try {
+
+            result =
+              await response.json();
+
+          } catch (error) {
+
+            console.log(
+              "Response was not JSON."
+            );
+
+          }
+
+
+          console.log(
+            "ORDER RESPONSE:",
+            result
+          );
+
+
+          // -------------------------
+          // ERROR
+          // -------------------------
+
+          if (!response.ok) {
+
+            const errorMessage =
+              result?.message ||
+              result?.error ||
+              "Unable to place order.";
+
+
+            alert(
+              errorMessage
+            );
+
+
+            placeOrderButton.disabled =
+              false;
+
+            placeOrderButton.textContent =
+              "Place Order";
+
+
+            return;
+
+          }
+
+
+          // -------------------------
+          // SUCCESS
+          // -------------------------
+
+          alert(
+            "Order placed successfully!"
+          );
+
+
+          // Clear cart
+          localStorage.removeItem(
+            "customerCart"
+          );
+
+
+          // Go home
+          window.location.href =
+            "index.html";
+
+
+        } catch (error) {
+
+          console.error(
+            "Place order error:",
+            error
+          );
+
+
+          alert(
+            "Could not connect to the server."
+          );
+
+
+          placeOrderButton.disabled =
+            false;
+
+          placeOrderButton.textContent =
+            "Place Order";
+
+        }
 
       }
+    );
 
-    });
 </script>
 
 </body>
+
 </html>

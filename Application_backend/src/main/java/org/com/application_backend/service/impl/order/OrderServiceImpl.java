@@ -102,10 +102,11 @@ public class OrderServiceImpl implements OrderService {
             );
             existing.setSpareParts(parts);
         }
-        if (dto.getQuantity() > 0) {
+        if (dto.getQuantity() != null && dto.getQuantity() > 0) {
             existing.setQuantity(dto.getQuantity());
         }
-        if (dto.getTotalPrice() > 0) {
+
+        if (dto.getTotalPrice() != null && dto.getTotalPrice() > 0) {
             existing.setTotalPrice(dto.getTotalPrice());
         }
         if (dto.getOrderStatus() != null) {

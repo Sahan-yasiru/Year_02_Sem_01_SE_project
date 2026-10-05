@@ -19,8 +19,8 @@ public class OrderDTO {
     private String orderId;
     private CustomerDTO customer;
     private List<SparePartDTO> spareParts;
-    private int quantity;
-    private double totalPrice;
+    private Integer quantity;
+    private Double totalPrice;
     private Date date;
     private OrderStatus orderStatus;
     private String address;
