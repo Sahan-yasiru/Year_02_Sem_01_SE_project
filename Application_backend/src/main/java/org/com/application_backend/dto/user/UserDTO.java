@@ -1,5 +1,6 @@
 package org.com.application_backend.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ public class UserDTO {
     private UserRole userRole;
     @NotBlank(message = "username should be inserted")
     private String username;
-    @NotBlank(message = "password should be inserted")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @NotBlank
     @Pattern(

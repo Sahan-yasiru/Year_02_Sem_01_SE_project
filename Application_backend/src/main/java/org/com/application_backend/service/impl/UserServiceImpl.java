@@ -1,6 +1,7 @@
 package org.com.application_backend.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.com.application_backend.config.PasswordHasher;
 import org.com.application_backend.dto.user.UserDTO;
 import org.com.application_backend.entity.user.User;
 import org.com.application_backend.exception.CustomException;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
             throw new CustomException("Email is required");
         }
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new CustomException("Password is required");
+        }
         String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
         if (!dto.getEmail().matches(emailRegex)) {
@@ -47,6 +51,7 @@ public class UserServiceImpl implements UserService {
         User user = modelMapper.map(dto, User.class);
         user.setUsername(cleanUsername);
         user.setEmail(cleanEmail);
+        user.setPassword(PasswordHasher.getHashPassword(dto.getPassword()));
         user.setUserID(null);
         
         return modelMapper.map(userRepository.save(user), UserDTO.class);
@@ -73,6 +78,9 @@ public class UserServiceImpl implements UserService {
         User userToSave = modelMapper.map(dto, User.class);
         userToSave.setUsername(cleanUsername);
         userToSave.setEmail(cleanEmail);
+        userToSave.setPassword(dto.getPassword() == null || dto.getPassword().isBlank()
+                ? existingUser.getPassword()
+                : PasswordHasher.getHashPassword(dto.getPassword()));
         return modelMapper.map(userRepository.save(userToSave), UserDTO.class);
     }
 
@@ -102,4 +110,3 @@ public class UserServiceImpl implements UserService {
 
 
 }
-

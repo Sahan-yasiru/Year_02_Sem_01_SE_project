@@ -1,6 +1,7 @@
 package org.com.application_backend.service.impl.customer;
 
 import lombok.AllArgsConstructor;
+import org.com.application_backend.config.PasswordHasher;
 import org.com.application_backend.dto.Customer.CustomerDTO;
 import org.com.application_backend.entity.Customer.Customer;
 import org.com.application_backend.entity.order.Order;
@@ -38,6 +39,11 @@ public class CustomerServiceImpl implements CustomerService {
 
             throw new CustomException("Customer username is already registered");
         }
+        if (dto.getUser() != null) {
+            if (dto.getUser().getPassword() == null || dto.getUser().getPassword().isBlank()) {
+                throw new CustomException("Password is required");
+            }
+        }
 
         if (customerRepository.existsByEmail(dto.getEmail())) {
             throw new CustomException("Customer email is already registered");
@@ -48,6 +54,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         Customer customer = modelMapper.map(dto, Customer.class);
+        if (customer.getUser() != null) {
+            customer.getUser().setPassword(PasswordHasher.getHashPassword(dto.getUser().getPassword()));
+        }
 
         Customer savedCustomer = customerRepository.save(customer);
 

@@ -243,6 +243,10 @@ function openAddUserModal() {
     document.getElementById('user-modal-title').textContent = 'Add New User';
     document.getElementById('user-modal-subtitle').textContent = 'Fill in user credentials and assign role';
     document.getElementById('user-submit-text').textContent = 'Add User';
+    const passwordInput = document.getElementById('field-user-password');
+    passwordInput.placeholder = 'Enter password';
+    passwordInput.required = true;
+    document.getElementById('user-password-required').style.display = '';
 
     openUserModal();
     setTimeout(() => document.getElementById('field-user-username')?.focus(), 60);
@@ -260,7 +264,11 @@ function openEditUserModal(id) {
     document.getElementById('field-user-role').value     = user.userRole || 'Sales_Staff';
     document.getElementById('field-user-email').value    = user.email || '';
     document.getElementById('field-user-phone').value    = user.phone || '';
-    document.getElementById('field-user-password').value = user.password || '';
+    const passwordInput = document.getElementById('field-user-password');
+    passwordInput.value = '';
+    passwordInput.placeholder = 'Leave blank to keep unchanged';
+    passwordInput.required = false;
+    document.getElementById('user-password-required').style.display = 'none';
 
     document.getElementById('user-modal-title').textContent    = 'Edit User';
     document.getElementById('user-modal-subtitle').textContent = `Editing account for ${user.username || 'User #' + id}`;
@@ -364,8 +372,10 @@ function validateUserForm() {
     const rules = [
         { id: 'field-user-username', errId: 'err-user-username', msg: 'Username is required' },
         { id: 'field-user-email',    errId: 'err-user-email',    msg: 'Email address is required' },
-        { id: 'field-user-password', errId: 'err-user-password', msg: 'Password is required' },
     ];
+    if (!usrEditingID) {
+        rules.push({ id: 'field-user-password', errId: 'err-user-password', msg: 'Password is required' });
+    }
 
     rules.forEach(r => {
         const input = document.getElementById(r.id);
