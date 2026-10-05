@@ -129,6 +129,7 @@ function navigate(page, title) {
 
                 // Call page-specific init function if it exists
                 const initFnMap = {
+                    dashboard:     'initDashboardPage',
                     customers:     'initCustomersPage',
                     supplier:      'initSupplierPage',
                     users:         'initUsersPage',
@@ -257,8 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Load default page — Customers
-    navigate('customers', 'Customers');
+    // Load the dashboard first.
+    navigate('dashboard', 'Dashboard');
 });
 
 // Expose routing and toast helpers globally
