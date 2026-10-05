@@ -1,0 +1,629 @@
+<!-- ═══════════════════════════════════════════════════════════
+     PURCHASE ORDERS PAGE — pages/purchase-orders.html
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Purchase Orders</h1>
+        <p class="page-subtitle">Create supplier purchase orders, receive inventory shipments, and track payment status</p>
+    </div>
+    <button class="btn btn-orange" id="btn-new-po" onclick="openPOModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+        </svg>
+        New Purchase Order
+    </button>
+</div>
+
+<!-- Stats Row -->
+<div class="stats-row" id="po-stats-row">
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(99,102,241,0.15);color:#818cf8;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <div class="stat-label">Total Purchase Orders</div>
+            <div class="stat-value" id="po-stat-total">—</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:#fbbf24;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <div class="stat-label">Pending Receipt</div>
+            <div class="stat-value" id="po-stat-pending">—</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(16,185,129,0.15);color:#34d399;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <div class="stat-label">Received / Fulfilled</div>
+            <div class="stat-value" id="po-stat-received">—</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(59,130,246,0.15);color:#60a5fa;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0H3m0 0a60.07 60.07 0 0 1 15.797-2.101c.727-.198 1.453.342 1.453 1.096V6m-16.5 0a60.07 60.07 0 0 0 0 12.75m0 0H3m1.5-6h15"/>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <div class="stat-label">Pending Payment</div>
+            <div class="stat-value" id="po-stat-unpaid">—</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="card">
+    <div class="card-header" style="padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div class="search-bar">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+            </svg>
+            <input type="text" id="po-search" placeholder="Search by PO # or Supplier..." oninput="filterPOs()" autocomplete="off" spellcheck="false"/>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="po-status-filter" class="form-control form-select" style="min-width:150px;padding:8px 12px;font-size:13px;" onchange="filterPOs()">
+                <option value="">All Order Statuses</option>
+                <option value="PENDING">Pending</option>
+                <option value="PARTIALLY_RECEIVED">Partially Received</option>
+                <option value="RECEIVED">Received</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+            <select id="po-payment-filter" class="form-control form-select" style="min-width:150px;padding:8px 12px;font-size:13px;" onchange="filterPOs()">
+                <option value="">All Payment Statuses</option>
+                <option value="PENDING">Pending Payment</option>
+                <option value="PARTIALLY_PAID">Partially Paid</option>
+                <option value="PAID">Paid</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadPurchaseOrders()" title="Refresh">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <table class="table" id="po-table">
+            <thead>
+                <tr>
+                    <th>PO Number</th>
+                    <th>Supplier</th>
+                    <th>Order Date</th>
+                    <th>Items</th>
+                    <th>Total Amount</th>
+                    <th>Order Status</th>
+                    <th>Payment Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="po-tbody">
+                <tr>
+                    <td colspan="8" style="text-align:center;padding:40px;color:var(--color-text-muted);">
+                        <div class="spinner-sm" style="display:inline-block;margin-right:8px;"></div> Loading purchase orders…
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="po-empty" class="empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+            </svg>
+        </div>
+        <div class="empty-state-title">No purchase orders found</div>
+        <div class="empty-state-msg">Create your first purchase order using the button above.</div>
+    </div>
+</div>
+
+<!-- ═══════════════════ CREATE / EDIT PURCHASE ORDER MODAL ═══════════════════ -->
+<div class="modal-overlay" id="po-modal-overlay" style="display:none;">
+    <div class="modal" style="max-width:760px;width:95%;" id="po-modal">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="po-modal-title">New Purchase Order</h2>
+                <p class="modal-subtitle" id="po-modal-subtitle">Select a supplier to load linked spare parts and specify order quantities</p>
+            </div>
+            <button class="modal-close" onclick="closePOModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <form id="po-form" onsubmit="submitPOForm(event)" autocomplete="off">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <!-- PO ID (auto-generated) -->
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label">PO Number <span class="label-badge">Auto-generated</span></label>
+                        <input type="text" id="po-id-display" class="form-input" readonly
+                               style="opacity:0.75;cursor:not-allowed;font-family:monospace;font-weight:600;"/>
+                    </div>
+
+                    <!-- Supplier dropdown -->
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="po-supplier-select">Supplier <span class="required">*</span></label>
+                        <select id="po-supplier-select" class="form-input" required onchange="onPOSupplierChange(this.value)">
+                            <option value="">— Select supplier —</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+                    <!-- Order Date -->
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="po-order-date">Order Date <span class="required">*</span></label>
+                        <input type="date" id="po-order-date" class="form-input" required/>
+                    </div>
+
+                    <!-- Expected Date -->
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="po-expected-date">Expected Delivery Date</label>
+                        <input type="date" id="po-expected-date" class="form-input"/>
+                    </div>
+                </div>
+
+                <!-- Supplier Spare Parts Order Items -->
+                <div class="form-group">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                        <div>
+                            <label class="form-label" style="margin:0;">Spare Parts Order Items <span class="required">*</span></label>
+                            <span style="font-size:0.75rem;color:var(--color-text-muted);" id="po-parts-source-info">Filtered by selected supplier</span>
+                        </div>
+                        <button type="button" class="btn btn-ghost btn-sm" id="btn-add-po-item" onclick="addPOItemRow()" disabled>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                            </svg>
+                            Add Spare Part
+                        </button>
+                    </div>
+
+                    <!-- Notice if no supplier selected -->
+                    <div id="po-supplier-prompt" class="po-supplier-prompt-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                        </svg>
+                        <span>Please select a supplier above to load spare parts linked to that supplier.</span>
+                    </div>
+
+                    <!-- Items container -->
+                    <div id="po-items-list" class="po-items-container" style="display:none;">
+                        <!-- Injected dynamic rows -->
+                    </div>
+
+                    <div id="po-items-empty-hint" style="text-align:center;padding:16px;color:var(--color-text-muted);font-size:0.82rem;border:1px dashed var(--color-border);border-radius:10px;display:none;">
+                        No spare parts added to this purchase order yet. Click "Add Spare Part" to add items.
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary-box" id="po-summary-box">
+                    <div class="summary-row">
+                        <span>Distinct Items</span>
+                        <span id="po-sum-items">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Quantity</span>
+                        <span id="po-sum-qty">0</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Order Total Amount</span>
+                        <span id="po-sum-total">Rs 0.00</span>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                    <label class="form-label" for="po-notes">Notes / Special Instructions</label>
+                    <textarea id="po-notes" class="form-input" rows="2" placeholder="e.g., Delivery terms, invoice reference, package notes..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closePOModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="po-submit-btn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Save Purchase Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ RECEIVE GOODS MODAL ═══════════════════ -->
+<div class="modal-overlay" id="po-receive-overlay" style="display:none;">
+    <div class="modal" style="max-width:720px;width:95%;">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title">Receive Goods &amp; Update Inventory</h2>
+                <p class="modal-subtitle" id="po-receive-subtitle">Record received quantities to automatically update stock in inventory</p>
+            </div>
+            <button class="modal-close" onclick="closeReceiveModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="po-receive-meta" style="margin-bottom:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--color-border);border-radius:10px;font-size:0.85rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                <div>
+                    <span style="color:var(--color-text-muted);">Purchase Order:</span>
+                    <strong id="po-receive-id-val" style="margin-left:4px;color:var(--color-text-main);">—</strong>
+                </div>
+                <div>
+                    <span style="color:var(--color-text-muted);">Supplier:</span>
+                    <strong id="po-receive-supp-val" style="margin-left:4px;color:var(--color-text-main);">—</strong>
+                </div>
+                <div>
+                    <span style="color:var(--color-text-muted);">Status:</span>
+                    <span id="po-receive-status-badge" style="margin-left:4px;">—</span>
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <label class="form-label" style="margin:0;">Ordered Spare Parts Receipt</label>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="setAllReceiveMax()">
+                        Receive All Remaining
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="clearAllReceive()">
+                        Clear
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container" style="margin-bottom:16px;">
+                <table class="table" style="font-size:0.85rem;">
+                    <thead>
+                        <tr>
+                            <th>Spare Part</th>
+                            <th style="text-align:center;">Ordered</th>
+                            <th style="text-align:center;">Prev Received</th>
+                            <th style="text-align:center;">Remaining</th>
+                            <th style="width:140px;text-align:right;">Receive Now</th>
+                        </tr>
+                    </thead>
+                    <tbody id="po-receive-items-tbody">
+                        <!-- Injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="po-inventory-notice">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/>
+                </svg>
+                <span>Incoming quantities will immediately increase available stock in <strong>Inventory (quantity_on_hand)</strong> upon confirmation.</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeReceiveModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-submit-receive" onclick="submitGoodsReceipt()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Confirm &amp; Update Inventory
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ PAYMENT STATUS MODAL ═══════════════════ -->
+<div class="modal-overlay" id="po-payment-overlay" style="display:none;">
+    <div class="modal" style="max-width:480px;width:95%;">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title">Update Payment Status</h2>
+                <p class="modal-subtitle" id="po-payment-subtitle">Set supplier payment progress for this purchase order</p>
+            </div>
+            <button class="modal-close" onclick="closePaymentModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--color-border);border-radius:10px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.87rem;">
+                    <span style="color:var(--color-text-muted);">Purchase Order:</span>
+                    <strong id="po-pay-id-label">—</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.87rem;">
+                    <span style="color:var(--color-text-muted);">Total Order Amount:</span>
+                    <strong id="po-pay-total-label" style="color:var(--color-accent);">—</strong>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Payment Status <span class="required">*</span></label>
+                <div class="payment-options">
+                    <label class="payment-radio-option">
+                        <input type="radio" name="poPaymentStatusRadio" value="PENDING" id="pay-opt-pending"/>
+                        <div class="payment-radio-card">
+                            <div class="payment-radio-title">Pending</div>
+                            <div class="payment-radio-desc">Payment has not yet been processed</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-radio-option">
+                        <input type="radio" name="poPaymentStatusRadio" value="PARTIALLY_PAID" id="pay-opt-partially-paid"/>
+                        <div class="payment-radio-card">
+                            <div class="payment-radio-title">Partially Paid</div>
+                            <div class="payment-radio-desc">Partial payment or advance deposit made</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-radio-option">
+                        <input type="radio" name="poPaymentStatusRadio" value="PAID" id="pay-opt-paid"/>
+                        <div class="payment-radio-card">
+                            <div class="payment-radio-title">Paid</div>
+                            <div class="payment-radio-desc">Full amount has been paid to the supplier</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closePaymentModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitPaymentStatusUpdate()">
+                    Save Payment Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ VIEW DETAILS MODAL ═══════════════════ -->
+<div class="modal-overlay" id="po-view-overlay" style="display:none;">
+    <div class="modal" style="max-width:660px;width:95%;">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title">Purchase Order Details</h2>
+                <p class="modal-subtitle" id="po-view-id-label">—</p>
+            </div>
+            <button class="modal-close" onclick="closeViewPOModal()" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body" id="po-view-body">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ DELETE CONFIRM MODAL ═══════════════════ -->
+<div class="confirm-overlay" id="po-confirm-overlay" style="display:none;">
+    <div class="confirm-box">
+        <div class="confirm-icon danger">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+            </svg>
+        </div>
+        <div class="confirm-title">Delete Purchase Order?</div>
+        <div class="confirm-msg" id="po-confirm-msg">Are you sure you want to delete this purchase order? This action cannot be undone.</div>
+        <div class="confirm-actions">
+            <button class="btn btn-ghost" onclick="closeDeletePOConfirm()">Cancel</button>
+            <button class="btn btn-danger" id="po-confirm-delete-btn" onclick="executeDeletePO()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ── Purchase Orders Page Styles ── */
+.po-supplier-prompt-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(0, 117, 255, 0.08);
+    border: 1px dashed rgba(0, 117, 255, 0.3);
+    border-radius: 10px;
+    color: #93c5fd;
+    font-size: 0.85rem;
+}
+
+.po-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.po-item-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    animation: slideInRow 0.18s ease;
+}
+
+@keyframes slideInRow {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.po-item-row .row-field-label {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    margin-bottom: 3px;
+    display: block;
+}
+
+.po-item-row select,
+.po-item-row input {
+    font-size: 0.85rem;
+}
+
+.po-item-row .po-line-total-val {
+    font-size: 0.88rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: right;
+    display: block;
+}
+
+.po-item-row .btn-remove-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, background 0.15s;
+    margin-top: 14px;
+}
+.po-item-row .btn-remove-item:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+}
+
+.po-inventory-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 8px;
+    color: #a7f3d0;
+    font-size: 0.82rem;
+    margin-bottom: 16px;
+}
+
+/* Payment radio options */
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.payment-radio-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.payment-radio-option:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.payment-radio-option input[type="radio"] {
+    margin-top: 3px;
+    accent-color: var(--color-accent);
+}
+.payment-radio-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+.payment-radio-desc {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+/* Status Badges */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.badge-status.badge-PENDING {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.badge-status.badge-PARTIALLY_RECEIVED {
+    background: rgba(14, 165, 233, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+.badge-status.badge-RECEIVED {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.badge-status.badge-COMPLETED {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+.badge-status.badge-CANCELLED {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Payment Status Badges */
+.badge-pay {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.badge-pay.badge-pay-PENDING {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+.badge-pay.badge-pay-PARTIALLY_PAID {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+.badge-pay.badge-pay-PAID {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+@media (max-width: 768px) {
+    .po-item-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .po-item-row .btn-remove-item {
+        margin-top: 0;
+        align-self: flex-end;
+    }
+}
+</style>
