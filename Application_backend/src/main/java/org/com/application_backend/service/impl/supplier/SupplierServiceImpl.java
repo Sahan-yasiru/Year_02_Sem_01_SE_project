@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Service
@@ -45,13 +46,26 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public SupplierDTO update(SupplierDTO dto) throws Exception {
-        if (!ifExit(dto.getSupplierID())) {
-            throw new CustomException("supplier not found");
+
+        Supplier supplier = supplierRepository.findById(dto.getSupplierID())
+                .orElseThrow(() -> new CustomException("Supplier not found"));
+
+        if (!Objects.equals(supplier.getEmail(), dto.getEmail())
+                && supplierRepository.existsByEmail(dto.getEmail())) {
+            throw new CustomException("Supplier E-mail is already registered");
         }
-        if (!find(dto.getSupplierID()).equals(dto)) {
-            validateSupplier(dto);
+
+        if (!Objects.equals(supplier.getPhone(), dto.getPhone())
+                && supplierRepository.existsByPhone(dto.getPhone())) {
+            throw new CustomException("Supplier Phone number is already registered");
         }
-        return modelMapper.map(supplierRepository.save(modelMapper.map(dto, Supplier.class)), SupplierDTO.class);
+
+        modelMapper.map(dto, supplier);
+
+        return modelMapper.map(
+                supplierRepository.save(supplier),
+                SupplierDTO.class
+        );
     }
 
     @Override
