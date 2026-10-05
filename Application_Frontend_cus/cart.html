@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Shopping Cart | AutoParts</title>
+
+  <link rel="stylesheet" href="css/customer-shop.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+</head>
+
+<body>
+
+<section class="section">
+
+  <div class="container">
+
+    <div class="section-header">
+
+      <div>
+          <span class="section-label">
+            SHOPPING CART
+          </span>
+
+        <h2>Your Cart</h2>
+
+        <p>
+          Review your selected automotive parts.
+        </p>
+      </div>
+
+      <a href="index.html#products" class="view-all">
+        <i class="fa-solid fa-arrow-left"></i>
+        Continue Shopping
+      </a>
+
+    </div>
+
+
+    <div id="cartItems"></div>
+
+
+    <div class="cart-summary">
+
+      <h3>Order Summary</h3>
+
+      <div class="cart-summary-row">
+
+        <span>Total</span>
+
+        <strong id="cartTotal">
+          Rs. 0.00
+        </strong>
+
+      </div>
+
+      <a
+        href="checkout.html"
+        class="checkout-btn"
+        id="checkoutButton"
+      >
+        Proceed to Checkout
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script src="js/customer-cart.js"></script>
+
+<script>
+  document.addEventListener(
+    "DOMContentLoaded",
+    renderCartPage
+  );
+</script>
+
+</body>
+</html>

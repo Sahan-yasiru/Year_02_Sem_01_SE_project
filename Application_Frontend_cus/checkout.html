@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Checkout | AutoParts</title>
+
+  <link rel="stylesheet" href="css/customer-shop.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+</head>
+
+<body>
+
+<section class="section">
+
+  <div class="container">
+
+    <div class="section-header">
+      <div>
+        <span class="section-label">
+          CHECKOUT
+        </span>
+
+        <h2>Complete Your Order</h2>
+
+        <p>
+          Enter your delivery details and review your order.
+        </p>
+      </div>
+
+      <a href="cart.html" class="view-all">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Cart
+      </a>
+    </div>
+
+
+    <div class="checkout-layout">
+
+      <!-- CUSTOMER DETAILS -->
+      <div class="checkout-card">
+
+        <h3>Delivery Details</h3>
+
+        <form id="checkoutForm">
+
+          <div class="checkout-form-group">
+            <label for="customerName">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              id="customerName"
+              required
+            >
+          </div>
+
+
+          <div class="checkout-form-group">
+            <label for="customerPhone">
+              Phone Number
+            </label>
+
+            <input
+              type="text"
+              id="customerPhone"
+              required
+            >
+          </div>
+
+
+          <div class="checkout-form-group">
+            <label for="customerEmail">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="customerEmail"
+              required
+            >
+          </div>
+
+
+          <div class="checkout-form-group">
+            <label for="deliveryAddress">
+              Delivery Address
+            </label>
+
+            <textarea
+              id="deliveryAddress"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+
+        </form>
+
+      </div>
+
+
+      <!-- ORDER SUMMARY -->
+      <div class="checkout-card">
+
+        <h3>Order Summary</h3>
+
+        <div id="checkoutItems"></div>
+
+        <div class="checkout-total-row">
+          <span>Total</span>
+
+          <strong id="checkoutTotal">
+            Rs. 0.00
+          </strong>
+        </div>
+
+        <button
+          type="submit"
+          form="checkoutForm"
+          class="checkout-btn"
+        >
+          Place Order
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script src="js/customer-cart.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const loggedUser = JSON.parse(
+      localStorage.getItem("loggedUser")
+    );
+
+    if (!loggedUser) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("customerName").value =
+      loggedUser.username || "";
+
+    document.getElementById("customerEmail").value =
+      loggedUser.email || "";
+
+    document.getElementById("customerPhone").value =
+      loggedUser.phone || "";
+
+    renderCheckoutSummary();
+  });
+
+
+  function renderCheckoutSummary() {
+
+    const checkoutItems =
+      document.getElementById("checkoutItems");
+
+    const checkoutTotal =
+      document.getElementById("checkoutTotal");
+
+    const cart = getCart();
+
+    if (cart.length === 0) {
+      checkoutItems.innerHTML =
+        "<p>Your cart is empty.</p>";
+
+      checkoutTotal.textContent =
+        "Rs. 0.00";
+
+      return;
+    }
+
+    checkoutItems.innerHTML =
+      cart.map(item => `
+        <div class="checkout-item">
+          <span>
+            ${item.partName}
+            × ${item.quantity}
+          </span>
+
+          <strong>
+            Rs. ${
+        Number(
+          item.price * item.quantity
+        ).toLocaleString("en-LK")
+      }
+          </strong>
+        </div>
+      `).join("");
+
+    checkoutTotal.textContent =
+      `Rs. ${getCartTotal().toLocaleString("en-LK")}`;
+  }
+
+
+  document
+    .getElementById("checkoutForm")
+    .addEventListener("submit", async function (event) {
+
+      event.preventDefault();
+
+      const loggedUser = JSON.parse(
+        localStorage.getItem("loggedUser")
+      );
+
+      const cart = getCart();
+
+      if (!loggedUser) {
+        alert("Please login before placing an order.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      const customerName =
+        document.getElementById("customerName").value.trim();
+
+      const customerPhone =
+        document.getElementById("customerPhone").value.trim();
+
+      const customerEmail =
+        document.getElementById("customerEmail").value.trim();
+
+      const deliveryAddress =
+        document.getElementById("deliveryAddress").value.trim();
+
+      if (
+        !customerName ||
+        !customerPhone ||
+        !customerEmail ||
+        !deliveryAddress
+      ) {
+        alert("Please complete all delivery details.");
+        return;
+      }
+
+
+      // Expand cart quantities into spare-parts list
+      const spareParts = [];
+
+      cart.forEach(item => {
+
+        for (let i = 0; i < item.quantity; i++) {
+
+          spareParts.push({
+            partID: item.partId
+          });
+
+        }
+
+      });
+
+
+      const totalQuantity = cart.reduce(
+        (sum, item) =>
+          sum + Number(item.quantity),
+        0
+      );
+
+
+      const orderData = {
+
+        customer: {
+          userID: loggedUser.userID
+        },
+
+        spareParts: spareParts,
+
+        quantity: totalQuantity,
+
+        address: deliveryAddress
+
+      };
+
+
+      console.log(
+        "ORDER REQUEST:",
+        orderData
+      );
+
+
+      try {
+
+        const response = await fetch(
+          "http://localhost:8080/api/orders",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(orderData)
+          }
+        );
+
+
+        const result = await response.json();
+
+        console.log(
+          "ORDER RESPONSE:",
+          result
+        );
+
+
+        if (!response.ok) {
+
+          alert(
+            result?.message ||
+            "Unable to place order."
+          );
+
+          return;
+        }
+
+
+        alert("Order placed successfully!");
+
+
+        // Clear cart only after successful order
+        localStorage.removeItem("customerCart");
+
+
+        window.location.href =
+          "index.html";
+
+      } catch (error) {
+
+        console.error(
+          "Place order error:",
+          error
+        );
+
+        alert(
+          "Could not connect to the server."
+        );
+
+      }
+
+    });
+</script>
+
+</body>
+</html>

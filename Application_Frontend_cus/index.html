@@ -1,33 +1,505 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+````
+```
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoParts | Premium Auto Parts Store</title>
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
-
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
-
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#fafafa">
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="css/customer-shop.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+<!-- TOP UTILITY BAR -->
+<div class="top-strip">
+  <div class="page-width top-strip-inner">
+    <div class="top-strip-left">
+      <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+    </div>
+
+    <div class="top-strip-right">
+
+      <div id="userArea">
+        <a href="login.html">
+          <i class="fa-solid fa-user"></i>
+          Login / Register
+        </a>
+      </div>
+
+      <span class="sep">|</span>
+
+      <span>
+    LKR
+    <i class="fa-solid fa-angle-down"></i>
+  </span>
+
+      <span class="sep">|</span>
+
+      <span>
+    ENGLISH
+    <i class="fa-solid fa-angle-down"></i>
+  </span>
+
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="store-hero" id="home">
+  <div class="hero-overlay"></div>
+
+  <header class="store-navbar">
+    <a href="index.html" class="store-logo">
+      <span class="store-logo-mark"><i class="fa-solid fa-gauge-high"></i></span>
+      <span class="store-logo-text">AUTOPARTS</span>
+    </a>
+
+    <nav class="store-nav-links">
+      <a href="#home" class="active">HOME</a>
+      <a href="#products">SHOP</a>
+      <a href="#categories">CATEGORIES</a>
+      <a href="#brands">BRANDS</a>
+      <a href="#about">ABOUT</a>
+    </nav>
+
+    <a
+      href="cart.html"
+      class="store-cart-btn"
+      id="cartButton"
+      aria-label="Shopping cart"
+    >
+      <i class="fa-solid fa-basket-shopping"></i>
+      <span class="store-cart-count">0</span>
+    </a>
+  </header>
+
+  <div class="store-hero-content">
+    <div class="welcome-text">Welcome to <span>AutoStore</span></div>
+
+    <h1>
+      <span>THE BEST</span>
+      AUTOMOTIVE SHOP
+    </h1>
+
+    <p>
+      Premium automotive spare parts, reliable brands and quality products
+      for your vehicle.
+    </p>
+
+    <a href="#products" class="explore-btn">EXPLORE NOW</a>
+  </div>
+
+</section>
+
+<!-- ================= SEARCH ================= -->
+
+<section class="search-section">
+
+  <div class="container">
+
+    <div class="search-box">
+
+      <div class="search-text">
+        <h3>What part are you looking for?</h3>
+        <p>Search our spare parts collection</p>
+      </div>
+
+
+      <div class="search-input">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+          type="text"
+          id="productSearch"
+          placeholder="Search brake pads, filters, engine parts..."
+        >
+
+        <button>
+          Search
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= CATEGORIES ================= -->
+
+<section class="section" id="categories">
+
+  <div class="container">
+
+    <div class="section-header">
+
+      <div>
+                <span class="section-label">
+                    SHOP BY CATEGORY
+                </span>
+
+        <h2>Find Parts Faster</h2>
+
+        <p>
+          Explore our most popular automotive categories.
+        </p>
+      </div>
+
+      <a href="#" class="view-all">
+        View All
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+
+    </div>
+
+
+    <div class="category-grid">
+
+      <div class="category-card">
+        <div class="category-icon">
+          <i class="fa-solid fa-car-battery"></i>
+        </div>
+
+        <h3>Electrical</h3>
+        <p>Batteries, lights and electrical components.</p>
+
+        <span>
+                    Explore
+                    <i class="fa-solid fa-arrow-right"></i>
+                </span>
+      </div>
+
+
+      <div class="category-card">
+        <div class="category-icon">
+          <i class="fa-solid fa-gears"></i>
+        </div>
+
+        <h3>Engine Parts</h3>
+        <p>Reliable engine components and replacements.</p>
+
+        <span>
+                    Explore
+                    <i class="fa-solid fa-arrow-right"></i>
+                </span>
+      </div>
+
+
+      <div class="category-card">
+        <div class="category-icon">
+          <i class="fa-solid fa-compact-disc"></i>
+        </div>
+
+        <h3>Brake System</h3>
+        <p>Brake pads, discs and braking components.</p>
+
+        <span>
+                    Explore
+                    <i class="fa-solid fa-arrow-right"></i>
+                </span>
+      </div>
+
+
+      <div class="category-card">
+        <div class="category-icon">
+          <i class="fa-solid fa-filter"></i>
+        </div>
+
+        <h3>Filters</h3>
+        <p>Oil, air and fuel filtration products.</p>
+
+        <span>
+                    Explore
+                    <i class="fa-solid fa-arrow-right"></i>
+                </span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section class="section products-section" id="products">
+
+  <div class="container">
+
+    <div class="section-header">
+
+      <div>
+                <span class="section-label">
+                    FEATURED PRODUCTS
+                </span>
+
+        <h2>Popular Spare Parts</h2>
+
+        <p>
+          High-quality products selected for your vehicle.
+        </p>
+      </div>
+
+      <a href="#" class="view-all">
+        Shop All
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+
+    </div>
+
+
+    <div class="product-grid" id="productGrid">
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= BENEFITS ================= -->
+
+<section class="benefits-section">
+
+  <div class="container benefits-grid">
+
+    <div class="benefit">
+
+      <div>
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+
+      <span>
+                <strong>Quality Products</strong>
+                Carefully selected auto parts
+            </span>
+
+    </div>
+
+
+    <div class="benefit">
+
+      <div>
+        <i class="fa-solid fa-truck-fast"></i>
+      </div>
+
+      <span>
+                <strong>Reliable Service</strong>
+                Easy and convenient ordering
+            </span>
+
+    </div>
+
+
+    <div class="benefit">
+
+      <div>
+        <i class="fa-solid fa-headset"></i>
+      </div>
+
+      <span>
+                <strong>Customer Support</strong>
+                We're here when you need us
+            </span>
+
+    </div>
+
+
+    <div class="benefit">
+
+      <div>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+
+      <span>
+                <strong>Secure Shopping</strong>
+                Safe customer experience
+            </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer" id="about">
+
+  <div class="container footer-grid">
+
+    <div class="footer-brand">
+
+      <a href="#" class="logo footer-logo">
+
+        <div class="logo-icon">
+          <i class="fa-solid fa-car-side"></i>
+        </div>
+
+        <div>
+          <h2>AutoParts</h2>
+          <span>Premium Parts Store</span>
+        </div>
+
+      </a>
+
+      <p>
+        Your trusted destination for quality automotive spare
+        parts and reliable vehicle components.
+      </p>
+
+    </div>
+
+
+    <div class="footer-column">
+      <h4>Shop</h4>
+      <a href="#products">All Products</a>
+      <a href="#categories">Categories</a>
+      <a href="#brands">Brands</a>
+    </div>
+
+
+    <div class="footer-column">
+      <h4>Customer</h4>
+      <a href="#">My Account</a>
+      <a href="#">My Orders</a>
+      <a href="#">Shopping Cart</a>
+    </div>
+
+
+    <div class="footer-column">
+      <h4>Support</h4>
+      <a href="#">Contact Us</a>
+      <a href="#">Help Center</a>
+      <a href="#">About Us</a>
+    </div>
+
+  </div>
+
+
+  <div class="container footer-bottom">
+
+    <p>
+      © 2026 AutoParts. All rights reserved.
+    </p>
+
+    <span>
+            Premium Automotive Parts Store
+        </span>
+
+  </div>
+
+</footer>
+
+<script src="js/customer-api.js"></script>
+<script src="js/customer-products.js"></script>
+
+<script>
+  (function () {
+    const userArea = document.getElementById("userArea");
+
+    let loggedUser = null;
+
+    try {
+      const storedUser = localStorage.getItem("loggedUser");
+      loggedUser = storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Invalid stored user data:", error);
+      localStorage.removeItem("loggedUser");
+    }
+
+    // Public visitor: stay on storefront and show Login / Register.
+    if (!loggedUser) {
+      return;
+    }
+
+    const role = String(
+      loggedUser.userRole || ""
+    ).trim().toLowerCase();
+
+    // Admin should go to admin dashboard.
+    if (role === "admin") {
+      window.location.replace(
+        "../Application_Frontend/index.html"
+      );
+      return;
+    }
+
+    // Only Customer can remain logged in on customer storefront.
+    if (role !== "customer") {
+      localStorage.removeItem("loggedUser");
+      window.location.replace("login.html");
+      return;
+    }
+
+    // Logged-in customer: show username and logout.
+    if (userArea) {
+      userArea.innerHTML = `
+        <span style="margin-right:12px;">
+          <i class="fa-solid fa-user"></i>
+          ${escapeUserText(loggedUser.username || "Customer")}
+        </span>
+
+        <button
+          type="button"
+          id="customerLogoutBtn"
+          style="
+            border:none;
+            background:transparent;
+            color:white;
+            cursor:pointer;
+            font-weight:600;
+          "
+        >
+          Logout
+        </button>
+      `;
+    }
+
+    const logoutBtn = document.getElementById("customerLogoutBtn");
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function () {
+
+        localStorage.removeItem("loggedUser");
+
+        window.location.href = "index.html";
+      });
+    }
+
+    function escapeUserText(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  })();
+</script>
+
+<script src="js/customer-cart.js"></script>
+<script src="js/customer-api.js"></script>
+<script src="js/customer-cart.js"></script>
+<script src="js/customer-products.js"></script>
 
 </body>
-
 </html>
+
+

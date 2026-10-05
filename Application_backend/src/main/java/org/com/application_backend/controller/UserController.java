@@ -6,6 +6,8 @@ import org.com.application_backend.service.custom.UserService;
 import org.com.application_backend.util.APIResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.com.application_backend.dto.user.LoginRequestDTO;
+import org.com.application_backend.dto.user.LoginResponseDTO;
 
 import java.util.List;
 
@@ -37,6 +39,20 @@ public class UserController {
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) throws Exception {
         userService.delete(id);
         return ResponseEntity.ok(new APIResponse<>(200, "User deleted successfully", null));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<APIResponse<LoginResponseDTO>> login(
+            @RequestBody LoginRequestDTO dto
+    ) throws Exception {
+
+        return ResponseEntity.ok(
+                new APIResponse<>(
+                        200,
+                        "Login successful",
+                        userService.login(dto)
+                )
+        );
     }
 
 

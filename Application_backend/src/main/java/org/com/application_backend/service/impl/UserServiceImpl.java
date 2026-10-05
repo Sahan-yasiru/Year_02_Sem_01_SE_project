@@ -9,6 +9,8 @@ import org.com.application_backend.repo.user.UserRepository;
 import org.com.application_backend.service.custom.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.com.application_backend.dto.user.LoginRequestDTO;
+import org.com.application_backend.dto.user.LoginResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +109,43 @@ public class UserServiceImpl implements UserService {
     public boolean ifExit(String userName) throws Exception {
         return userRepository.existsUsersByUsername(userName);
     }
+
+    @Override
+    public LoginResponseDTO login(LoginRequestDTO dto) throws Exception {
+
+        if (dto == null ||
+                dto.getUsername() == null ||
+                dto.getUsername().isBlank()) {
+
+            throw new CustomException("Username is required");
+        }
+
+        if (dto.getPassword() == null ||
+                dto.getPassword().isBlank()) {
+
+            throw new CustomException("Password is required");
+        }
+
+        User user = userRepository
+                .findByUsernameIgnoreCase(dto.getUsername().trim());
+
+        if (user == null) {
+            throw new CustomException("Invalid username or password");
+        }
+
+        if (!user.getPassword().equals(dto.getPassword())) {
+            throw new CustomException("Invalid username or password");
+        }
+
+        return new LoginResponseDTO(
+                user.getUserID(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getUserRole()
+        );
+    }
+
+
 
 
 }
